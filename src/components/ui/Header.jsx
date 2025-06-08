@@ -2,11 +2,16 @@ import { FaBell, FaUserCircle, FaSearch, FaBars } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import Notification from './Notification';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Header = ({ toggleSidebar }) => {
+    const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
-  
+    const handleLogout = () =>{
+    logout();
+    navigate('/login')
+  }
   return (
     <header className="sticky  top-0 z-40 bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-3">
@@ -51,9 +56,9 @@ const Header = ({ toggleSidebar }) => {
             </div>
             <div className="relative group">
               <FaUserCircle className="text-gray-600" size={32} />
-              <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
+              <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
                 <button 
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Sign out

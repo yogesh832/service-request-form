@@ -31,18 +31,23 @@ const Sidebar = ({ isOpen, toggle }) => {
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-20 bg-black bg-opacity-50 md:hidden"
-          onClick={toggle}
-        />
-      )}
-      
-      {/* <aside className={`fixed inset-y-0 left-0  z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}> */}
-      <aside className={`fixed left-0 z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out 
-  ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-  top-16 md:top-0 h-[calc(100vh-64px)] md:h-full`}>
+
+    
+<aside
+  className={`
+    fixed left-0 z-30 
+    bg-gradient-to-b from-blue-900 to-blue-800 text-white 
+    w-64 
+    transform transition-transform duration-300 ease-in-out
+
+    ${isOpen ? 'translate-x-0' : '-translate-x-full'}    // Mobile toggle
+    md:translate-x-0                                     // Always visible on desktop
+
+    top-16 md:top-0 lg:top-0                             // Adjust top for header height
+    h-[calc(100vh-64px)] md:h-full
+  `}
+>
+
 
         <div className="flex items-center justify-between p-5 border-b border-blue-700">
           <div className="flex items-center gap-2">

@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
 
+  const navigate = useNavigate(); // ✅ Hook call at top level
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(email, password);
+    
+    login(email, password);  // 👈 your login function
+    navigate('/dashboard');  // ✅ Correct way to redirect
   };
 
   return (
