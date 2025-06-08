@@ -164,3 +164,4 @@ const TicketForm = ({ onClose }) => {
     </Modal>
   );
 };
+export default TicketForm;

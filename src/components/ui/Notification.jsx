@@ -82,3 +82,4 @@ const Notification = ({ onClose }) => {
     </motion.div>
   );
 };
+export default Notification;

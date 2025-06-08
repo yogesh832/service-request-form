@@ -1,6 +1,7 @@
 import { FaFilePdf, FaFileCsv, FaTimes } from 'react-icons/fa';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
+import { useState } from 'react';
 
 const ExportModal = ({ onClose, onExport }) => {
   const [format, setFormat] = useState('csv');
@@ -105,3 +106,4 @@ const ExportModal = ({ onClose, onExport }) => {
     </Modal>
   );
 };
+export default ExportModal;

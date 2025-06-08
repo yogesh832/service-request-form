@@ -85,3 +85,4 @@ const AssignTicketModal = ({ ticket, onClose, onAssign }) => {
     </Modal>
   );
 };
+export default AssignTicketModal;

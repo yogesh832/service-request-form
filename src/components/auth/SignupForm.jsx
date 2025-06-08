@@ -21,7 +21,7 @@ const SignupForm = () => {
     register(formData);
   };
 
-  return (
+  return (       <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-white px-4 py-8">
     <div className="max-w-md w-full p-8 rounded-2xl shadow-xl bg-gradient-to-br from-white to-gray-50 border border-gray-100">
       <div className="text-center mb-8">
         <div className="mx-auto bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
@@ -111,5 +111,7 @@ const SignupForm = () => {
         </p>
       </div>
     </div>
+    </section>
   );
 };
+export default SignupForm;

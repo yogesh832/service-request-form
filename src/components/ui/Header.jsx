@@ -66,3 +66,4 @@ const Header = ({ toggleSidebar }) => {
     </header>
   );
 };
+export default Header;

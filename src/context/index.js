@@ -1,2 +1,2 @@
-export { default as AuthProvider, useAuth } from './AuthContext';
-export { default as TicketProvider, useTickets } from './TicketContext';
+export { AuthProvider, useAuth } from './AuthContext';
+export { TicketProvider, useTickets } from './TicketContext';

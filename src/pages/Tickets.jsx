@@ -5,6 +5,7 @@ import TicketList from '../components/tickets/TicketList';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import { de } from 'date-fns/locale';
 
 const Tickets = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
@@ -74,3 +75,4 @@ const Tickets = () => {
     </div>
   );
 };
+export default Tickets;

@@ -1,6 +1,7 @@
 import { FaTicketAlt, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { useTickets } from '../../context/TicketContext';
 import Card from '../ui/Card';
+import Tickets from '../../pages/Tickets';
 
 const StatCard = ({ icon, title, value, color }) => (
   <Card className={`border-l-4 ${color} p-5 hover:shadow-md transition-shadow`}>
@@ -42,3 +43,4 @@ const TicketStats = () => {
     </div>
   );
 };
+export default TicketStats;

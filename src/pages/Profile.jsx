@@ -2,6 +2,7 @@ import { FaUser, FaEnvelope, FaBuilding, FaSave, FaLock } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
+import { useState } from 'react';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -9,10 +10,10 @@ const Profile = () => {
   
   // For demo purposes
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    company: user?.company || '',
-    role: user?.role || ''
+    name: user?.name || 'deepak',
+    email: user?.email || 'dl@gmail.com',
+    company: user?.company || 'ddd',
+    role: user?.role || 'ddd'
   });
 
   const handleChange = (e) => {
@@ -210,3 +211,4 @@ const Profile = () => {
     </div>
   );
 };
+export default Profile;
