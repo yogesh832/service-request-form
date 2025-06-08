@@ -3,7 +3,6 @@ import { FaCheck, FaClock, FaExclamationTriangle, FaUserPlus } from 'react-icons
 import TicketItem from './TicketItem';
 import { useTickets, useAuth } from '../../context';
 
-
 const StatusIcon = ({ status }) => {
   const icons = {
     open: <FaExclamationTriangle className="text-red-500" />,

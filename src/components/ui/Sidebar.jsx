@@ -8,15 +8,23 @@ import { useAuth } from '../../context/AuthContext';
 const Sidebar = ({ isOpen, toggle }) => {
   const { user } = useAuth();
   
+//   const navItems = [
+//     { path: '/dashboard', label: 'Dashboard', icon: <FaHome />, roles: ['client', 'admin', 'employee'] },
+//     { path: '/tickets', label: 'Tickets', icon: <FaTicketAlt />, roles: ['client', 'admin', 'employee'] },
+//     { path: '/clients', label: 'Clients', icon: <FaUsers />, roles: ['admin'] },
+//     { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, roles: ['admin'] },
+//     { path: '/settings', label: 'Settings', icon: <FaCog />, roles: ['admin'] },
+//     { path: '/help', label: 'Help Center', icon: <FaQuestionCircle />, roles: ['client', 'admin', 'employee'] },
+//   ];
   const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: <FaHome />, roles: ['client', 'admin', 'employee'] },
-    { path: '/tickets', label: 'Tickets', icon: <FaTicketAlt />, roles: ['client', 'admin', 'employee'] },
-    { path: '/clients', label: 'Clients', icon: <FaUsers />, roles: ['admin'] },
-    { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, roles: ['admin'] },
-    { path: '/settings', label: 'Settings', icon: <FaCog />, roles: ['admin'] },
-    { path: '/help', label: 'Help Center', icon: <FaQuestionCircle />, roles: ['client', 'admin', 'employee'] },
-  ];
-  
+  { path: '/dashboard', label: 'Dashboard', icon: <FaHome />, roles: ['client', 'admin', 'employee'] },
+  { path: '/dashboard/tickets', label: 'Tickets', icon: <FaTicketAlt />, roles: ['client', 'admin', 'employee'] },
+  { path: '/clients', label: 'Clients', icon: <FaUsers />, roles: ['admin'] },
+  { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, roles: ['admin'] },
+  { path: '/settings', label: 'Settings', icon: <FaCog />, roles: ['admin'] },
+  { path: '/dashboard/profile', label: 'Profile', icon: <FaQuestionCircle />, roles: ['client', 'admin', 'employee'] },
+];
+
   const filteredItems = navItems.filter(item => 
     item.roles.includes(user?.role)
   );
@@ -31,7 +39,7 @@ const Sidebar = ({ isOpen, toggle }) => {
         />
       )}
       
-      <aside className={`fixed inset-y-0 left-0 z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0  z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between p-5 border-b border-blue-700">
           <div className="flex items-center gap-2">
             <div className="bg-white p-2 rounded-lg">

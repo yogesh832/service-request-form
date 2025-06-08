@@ -96,7 +96,7 @@ function App() {
   return (
     <AuthProvider>
       <TicketProvider>
-        <Router>
+        {/* <Router>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginForm />} />
@@ -138,7 +138,26 @@ function App() {
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </Router>
+        </Router> */}
+        <Router>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/login" element={<LoginForm />} />
+    <Route path="/signup" element={<SignupForm />} />
+    <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+
+    {/* Dashboard layout as parent route */}
+    <Route path="/dashboard" element={<DashboardLayout />}>
+      <Route index element={<Dashboard />} /> {/* default /dashboard */}
+      <Route path="tickets" element={<Tickets />} />
+      <Route path="profile" element={<Profile />} />
+      {/* you can add more nested routes here */}
+    </Route>
+
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+</Router>
+
       </TicketProvider>
     </AuthProvider>
   );
