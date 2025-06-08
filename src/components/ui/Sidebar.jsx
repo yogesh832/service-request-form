@@ -19,9 +19,21 @@ const Sidebar = ({ isOpen, toggle }) => {
   const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: <FaHome />, roles: ['client', 'admin', 'employee'] },
   { path: '/dashboard/tickets', label: 'Tickets', icon: <FaTicketAlt />, roles: ['client', 'admin', 'employee'] },
-  { path: '/clients', label: 'Clients', icon: <FaUsers />, roles: ['admin'] },
-  { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, roles: ['admin'] },
-  { path: '/settings', label: 'Settings', icon: <FaCog />, roles: ['admin'] },
+  { path: '/dashboard/clients', label: 'Clients', icon: <FaUsers />, roles: ['admin'] },
+    { 
+    path: '/dashboard/analytics', 
+    label: 'Analytics', 
+    icon: <FaChartBar />, 
+    roles: ['client', 'admin', 'employee'] 
+  },
+  { 
+    path: '/dashboard/settings', 
+    label: 'Settings', 
+    icon: <FaCog />, 
+    roles: ['client', 'admin', 'employee'] 
+  },
+  // { path: '/analytics', label: 'Analytics', icon: <FaChartBar />, roles: ['admin'] },
+  // { path: '/settings', label: 'Settings', icon: <FaCog />, roles: ['admin'] },
   { path: '/dashboard/profile', label: 'Profile', icon: <FaQuestionCircle />, roles: ['client', 'admin', 'employee'] },
 ];
 
@@ -32,7 +44,7 @@ const Sidebar = ({ isOpen, toggle }) => {
   return (
     <>
 
-    
+
 <aside
   className={`
     fixed left-0 z-30 

@@ -91,6 +91,10 @@ import DashboardLayout from './layouts/DashboardLayout';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
 import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
+import AnalyticsPage from './pages/Analytics';
+import SettingsPage from './pages/Settings';
+import Clients from './pages/Clients';
+
 
 function App() {
   return (
@@ -151,6 +155,9 @@ function App() {
       <Route index element={<Dashboard />} /> {/* default /dashboard */}
       <Route path="tickets" element={<Tickets />} />
       <Route path="profile" element={<Profile />} />
+         <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="clients" element={<Clients />} />
+      <Route path="settings" element={<SettingsPage />} />
       {/* you can add more nested routes here */}
     </Route>
 

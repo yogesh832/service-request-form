@@ -2,7 +2,7 @@ import { FaUser, FaEnvelope, FaBuilding, FaGlobe, FaBell, FaLock, FaShieldAlt } 
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
-
+import { useState } from 'react';
 const SettingsPanel = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState({
@@ -154,4 +154,74 @@ const SettingsPanel = () => {
                   }`}></span>
                   <span className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${
                     notifications.email ? 'transform translate-x-6' : ''
-                  }`
+                  }`}></span>
+                </div>
+              </label>
+              
+              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                <div>
+                  <p className="font-medium">Push Notifications</p>
+                  <p className="text-sm text-gray-600">Get instant alerts on your device</p>
+                </div>
+                <div className="relative inline-block w-12 h-6">
+                  <input 
+                    type="checkbox" 
+                    className="opacity-0 w-0 h-0"
+                    checked={notifications.push}
+                    onChange={() => handleNotificationChange('push')}
+                  />
+                  <span className={`absolute inset-0 rounded-full transition-colors ${
+                    notifications.push ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}></span>
+                  <span className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${
+                    notifications.push ? 'transform translate-x-6' : ''
+                  }`}></span>
+                </div>
+              </label>
+              
+              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                <div>
+                  <p className="font-medium">Weekly Reports</p>
+                  <p className="text-sm text-gray-600">Summary of your support activity</p>
+                </div>
+                <div className="relative inline-block w-12 h-6">
+                  <input 
+                    type="checkbox" 
+                    className="opacity-0 w-0 h-0"
+                    checked={notifications.weeklyReport}
+                    onChange={() => handleNotificationChange('weeklyReport')}
+                  />
+                  <span className={`absolute inset-0 rounded-full transition-colors ${
+                    notifications.weeklyReport ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}></span>
+                  <span className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${
+                    notifications.weeklyReport ? 'transform translate-x-6' : ''
+                  }`}></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </Card>
+      
+      <Card className="p-0 overflow-hidden">
+        <div className="p-5 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-800">Danger Zone</h2>
+        </div>
+        <div className="p-5">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h3 className="font-medium text-gray-800">Delete Account</h3>
+              <p className="text-sm text-gray-600">
+                Permanently remove your account and all associated data
+              </p>
+            </div>
+            <Button variant="danger">Delete Account</Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default SettingsPanel;
