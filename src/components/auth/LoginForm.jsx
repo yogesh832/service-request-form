@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-
+import { Link } from 'react-router-dom';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -63,9 +63,12 @@ const LoginForm = () => {
             <span className="ml-2 text-sm text-gray-600">Remember me</span>
           </label>
           
-          <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500 transition">
-            Forgot password?
-          </a>
+<Link 
+  to="/forgot-password" 
+  className="text-sm font-medium text-blue-600 hover:text-blue-500 transition"
+>
+  Forgot password?
+</Link>
         </div>
 
         <button 
@@ -79,9 +82,9 @@ const LoginForm = () => {
       <div className="mt-6 text-center">
         <p className="text-gray-600">
           Don't have an account?{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition">
-            Sign up
-          </a>
+          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 transition"
+         
+         > Sign up</Link>
         </p>
       </div>
     </div>

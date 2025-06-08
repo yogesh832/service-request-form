@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaBuilding } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -105,9 +106,9 @@ const SignupForm = () => {
       <div className="mt-6 text-center">
         <p className="text-gray-600">
           Already have an account?{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition">
+          <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition">
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </div>

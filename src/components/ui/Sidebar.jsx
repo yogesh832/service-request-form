@@ -39,7 +39,11 @@ const Sidebar = ({ isOpen, toggle }) => {
         />
       )}
       
-      <aside className={`fixed inset-y-0 left-0  z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* <aside className={`fixed inset-y-0 left-0  z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}> */}
+      <aside className={`fixed left-0 z-30 bg-gradient-to-b from-blue-900 to-blue-800 text-white w-64 transform transition-transform duration-300 ease-in-out 
+  ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+  top-16 md:top-0 h-[calc(100vh-64px)] md:h-full`}>
+
         <div className="flex items-center justify-between p-5 border-b border-blue-700">
           <div className="flex items-center gap-2">
             <div className="bg-white p-2 rounded-lg">

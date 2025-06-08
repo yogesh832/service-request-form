@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaEnvelope } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -69,9 +70,9 @@ const ForgotPasswordForm = () => {
       )}
 
       <div className="mt-6 text-center">
-        <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition">
+        <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition">
           Back to Login
-        </a>
+        </Link>
       </div>
     </div></section>
 
