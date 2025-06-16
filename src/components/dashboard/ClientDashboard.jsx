@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
+import api from '../../utils/api'; // updated import
 import TicketForm from '../tickets/TicketForm';
 import TicketList from '../tickets/TicketList';
 import TicketStats from '../tickets/TicketStats';
@@ -9,6 +10,32 @@ import Card from '../ui/Card';
 const ClientDashboard = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/tickets');
+        console.log('Fetched tickets:', response.data.data.tickets);
+        setTickets(response.data.data.tickets);
+      } catch (err) {
+        setError('Failed to load tickets. Please try again later.');
+        console.error('Error fetching tickets:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+  const handleTicketCreated = (newTicket) => {
+    setTickets([newTicket, ...tickets]);
+    setShowTicketForm(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -25,7 +52,7 @@ const ClientDashboard = () => {
         </Button>
       </div>
 
-      <TicketStats />
+      <TicketStats tickets={tickets} />
 
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
@@ -58,13 +85,34 @@ const ClientDashboard = () => {
             </div>
           </div>
         </div>
-        <TicketList filter={filter} />
+        {loading ? (
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading tickets...</p>
+          </div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">
+            {error}
+            <Button 
+              onClick={() => window.location.reload()}
+              className="mt-4"
+            >
+              Retry
+            </Button>
+          </div>
+        ) : (
+          <TicketList tickets={tickets} filter={filter} />
+        )}
       </Card>
 
       {showTicketForm && (
-        <TicketForm onClose={() => setShowTicketForm(false)} />
+        <TicketForm 
+          onClose={() => setShowTicketForm(false)} 
+          onTicketCreated={handleTicketCreated}
+        />
       )}
     </div>
   );
 };
+
 export default ClientDashboard;

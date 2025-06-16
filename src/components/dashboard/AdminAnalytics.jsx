@@ -2,21 +2,36 @@ import { FaTicketAlt, FaUserClock, FaChartPie, FaBuilding } from 'react-icons/fa
 import Card from '../ui/Card';
 import BarChart from '../ui/Charts/BarChart';
 import PieChart from '../ui/Charts/PieChart';
-import { useTickets } from '../../context/TicketContext';
-import { dummyCompanies } from '../../data/dummyCompanies';
-
+import{ useState ,useEffect } from 'react';
+import api from '../../utils/api'; // Ensure you have an API utility to fetch data
 const AdminAnalytics = () => {
-  const { tickets } = useTickets();
-  
-  // Calculate statistics
-  const ticketStats = {
-    open: tickets.filter(t => t.status === 'open').length,
-    pending: tickets.filter(t => t.status === 'pending').length,
-    resolved: tickets.filter(t => t.status === 'resolved').length,
-    total: tickets.length,
-    unassigned: tickets.filter(t => !t.assignedTo).length
+  const [tickets, setTickets] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await api.get('/tickets');
+      const tickets = response.data.data.tickets;
+      setTickets(tickets);
+    };
+
+  fetchData();
+}, []);
+useEffect(() => {
+  const fetchCompanies = async () => {
+    const response = await api.get('/companies');
+    const companies = response.data.data.companies;
+    setCompanies(companies);
   };
-  
+  fetchCompanies();
+}, []);
+    // Calculate statistics
+    const ticketStats = {
+      open: tickets.filter(t => t.status === 'open').length,
+      pending: tickets.filter(t => t.status === 'pending').length,
+      resolved: tickets.filter(t => t.status === 'resolved').length,
+      total: tickets.length,
+      unassigned: tickets.filter(t => !t.assignedTo).length
+    };
   // Ticket status distribution
   const statusData = [
     { name: 'Open', value: ticketStats.open },
@@ -25,7 +40,7 @@ const AdminAnalytics = () => {
   ];
   
   // Tickets by company
-  const companyData = dummyCompanies.map(company => ({
+  const companyData = companies.map(company => ({
     name: company.name,
     value: tickets.filter(t => t.company === company.name).length
   }));
@@ -78,7 +93,7 @@ const AdminAnalytics = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Companies</p>
-              <p className="text-2xl font-bold text-gray-800">{dummyCompanies.length}</p>
+              <p className="text-2xl font-bold text-gray-800">{companies.length}</p>
             </div>
             <div className="bg-purple-100 p-3 rounded-full text-purple-600">
               <FaBuilding />
@@ -187,3 +202,4 @@ const AdminAnalytics = () => {
 };
 
 export default AdminAnalytics;
+

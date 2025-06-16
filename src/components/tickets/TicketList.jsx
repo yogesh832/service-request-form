@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCheck, FaClock, FaExclamationTriangle, FaUserPlus } from 'react-icons/fa';
 import TicketItem from './TicketItem';
-import { useTickets, useAuth } from '../../context';
+import api from '../../utils/api';
 
 const StatusIcon = ({ status }) => {
   const icons = {
@@ -21,39 +21,83 @@ const StatusIcon = ({ status }) => {
 };
 
 const TicketList = ({ filter = 'all', onAssignClick, showAssignButton = true }) => {
-  const { tickets } = useTickets();
-  const { user } = useAuth();
-  
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+        
+        const response = await api.get('/tickets');
+        console.log('Fetched tickets:', response.data.data.tickets);
+        setTickets(response.data.data.tickets);
+      } catch (err) {
+        setError('Failed to load tickets');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const filteredTickets = tickets.filter(ticket => {
-    if (filter === 'assigned') return ticket.assignedTo === user?.id;
+    if (filter === 'assigned') return ticket.assignedTo === user?._id;
     if (filter !== 'all') return ticket.status === filter;
     return true;
   });
-
-  // Group tickets by company
+console.log('Filtered tickets:', filteredTickets);
+  // Group tickets by company name (string key)
   const ticketsByCompany = filteredTickets.reduce((groups, ticket) => {
-    const company = ticket.company;
-    if (!groups[company]) groups[company] = [];
-    groups[company].push(ticket);
+    const companyName = ticket.company?.name || 'Unknown Company';
+    if (!groups[companyName]) groups[companyName] = [];
+    groups[companyName].push(ticket);
     return groups;
   }, {});
+console.log('Tickets grouped by company:', ticketsByCompany);
+  if (loading) return (
+    <div className="py-12 text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <p className="text-gray-600 mt-4">Loading tickets...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div className="py-12 text-center text-red-500">
+      {error}
+      <button 
+        onClick={() => window.location.reload()}
+        className="mt-4 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+      >
+        Retry
+      </button>
+    </div>
+  );
 
   return (
     <div className="overflow-hidden">
-      {Object.entries(ticketsByCompany).map(([company, companyTickets]) => (
-        <div key={company} className="mb-6">
+      {Object.entries(ticketsByCompany).map(([companyName, companyTickets]) => (
+        <div key={companyName} className="mb-6">
           <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-700">{company}</h3>
+            <h3 className="font-semibold text-gray-700">{companyName}</h3>
           </div>
           <div className="divide-y divide-gray-100">
+           
             {companyTickets.map(ticket => (
-              <div key={ticket.id} className="p-4 hover:bg-gray-50 transition-colors">
+              <div key={ticket._id} className="p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start gap-4">
                   <StatusIcon status={ticket.status} />
                   <div className="flex-1">
                     <TicketItem ticket={ticket} />
                   </div>
                   {showAssignButton && !ticket.assignedTo && user?.role === 'admin' && (
+                
                     <button 
                       onClick={() => onAssignClick?.(ticket)}
                       className="flex items-center gap-1 text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
@@ -82,4 +126,5 @@ const TicketList = ({ filter = 'all', onAssignClick, showAssignButton = true }) 
     </div>
   );
 };
-export default  TicketList;
+
+export default TicketList;

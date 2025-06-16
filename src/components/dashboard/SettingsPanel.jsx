@@ -1,16 +1,20 @@
 import { FaUser, FaEnvelope, FaBuilding, FaGlobe, FaBell, FaLock, FaShieldAlt } from 'react-icons/fa';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import { useAuth } from '../../context/AuthContext';
+
 import { useState } from 'react';
 const SettingsPanel = () => {
-  const { user } = useAuth();
+
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
     weeklyReport: true
   });
-  
+  const user = JSON.parse(localStorage.getItem('user')); // Assuming user data is stored in localStorage
+  if (!user) {
+    return null;
+  }
+
   const handleNotificationChange = (type) => {
     setNotifications(prev => ({
       ...prev,

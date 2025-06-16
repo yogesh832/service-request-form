@@ -6,7 +6,7 @@ const TicketItem = ({ ticket }) => {
     <div>
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-semibold text-gray-800">{ticket.title}</h3>
+          <h3 className="font-semibold text-gray-800">{ticket.subject}</h3> {/* subject use karo title ki jagah */}
           <p className="text-gray-600 text-sm mt-1 line-clamp-2">
             {ticket.description}
           </p>
@@ -18,7 +18,7 @@ const TicketItem = ({ ticket }) => {
       
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-3 text-sm text-gray-500">
-          <span>#{ticket.id.slice(-6)}</span>
+          <span>{ticket?.ticketNumber}</span>  {/* id => _id */}
           <span>•</span>
           <span>{formatDate(ticket.createdAt)}</span>
           
@@ -42,4 +42,5 @@ const TicketItem = ({ ticket }) => {
     </div>
   );
 };
+
 export default TicketItem;

@@ -1,10 +1,17 @@
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
 import ClientDashboard from '../components/dashboard/ClientDashboard';
 import AdminDashboard from '../components/dashboard/AdminDashboard';
 import EmployeeDashboard from '../components/dashboard/EmployeeDashboard';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   if (!user) {
     return <div>Loading...</div>;
@@ -22,11 +29,7 @@ const Dashboard = () => {
     }
   };
 
-  return (
-    <div>
-      {renderDashboard()}
-    </div>
-  );
+  return <div>{renderDashboard()}</div>;
 };
 
 export default Dashboard;

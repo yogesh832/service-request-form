@@ -1,22 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaSearch, FaFilter } from 'react-icons/fa';
 import TicketList from '../tickets/TicketList';
 import Card from '../ui/Card';
 import TicketStats from '../tickets/TicketStats';
-import { useAuth } from '../../context/AuthContext';
+import api from '../../utils/api';
 
 const EmployeeDashboard = () => {
   const [filter, setFilter] = useState('assigned');
-  const { user } = useAuth();
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+        
+        const response = await api.get('/tickets');
+        setTickets(response.data.data.tickets);
+      } catch (err) {
+        setError('Failed to load tickets');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="text-center py-12">Loading tickets...</div>;
+  if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Employee Dashboard 👷</h1>
-        <p className="text-gray-600">Welcome back, {user?.name}! Here are your assigned tickets</p>
+        <p className="text-gray-600">Welcome back! Here are your assigned tickets</p>
       </div>
 
-      <TicketStats />
+      <TicketStats tickets={tickets} />
 
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
@@ -50,11 +76,13 @@ const EmployeeDashboard = () => {
           </div>
         </div>
         <TicketList 
-          filter={filter} 
+          tickets={tickets}
+          filter={filter}
           showAssignButton={false}
         />
       </Card>
     </div>
   );
 };
+
 export default EmployeeDashboard;

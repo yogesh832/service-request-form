@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlus, FaSearch, FaFilter, FaFileExport } from 'react-icons/fa';
 import AssignTicketModal from '../modals/AssignTicketModal';
 import ExportModal from '../modals/ExportModal';
@@ -8,27 +8,71 @@ import Button from '../ui/Button';
 import TicketStats from '../tickets/TicketStats';
 import BarChart from '../ui/Charts/BarChart';
 import PieChart from '../ui/Charts/PieChart';
-import { useTickets } from '../../context/TicketContext';
+import api from '../../utils/api'; // aapka api instance jisme api.get hota hai
 
 const AdminDashboard = () => {
-  const [showAssignModal, setShowAssignModal] = useState(false);
-  const [showExportModal, setShowExportModal] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [filter, setFilter] = useState('all');
-  const { tickets, updateTicket } = useTickets();
+  const [tickets, setTickets] = useState([]);
+  const [employees, setEmployees] = useState([]);
 
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [filter, setFilter] = useState('all');
+
+  // Fetch tickets data
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const res = await api.get('/tickets');
+        setTickets(res.data.data.tickets); // assume response contains tickets array directly
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+      }
+    };
+    fetchTickets();
+  }, []);
+
+  // Fetch employees data
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get('/users/employees');
+        console.log('Fetched employees:', res.data.data);
+        setEmployees(res.data.data.users); // assume response contains employees array directly
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+      }
+    };
+    fetchEmployees();
+  }, []);
+
+  // Filter tickets based on status
+  const filteredTickets = tickets.filter(ticket => {
+    if (filter === 'all') return true;
+    return ticket.status === filter;
+  });
+
+  // Update ticket assignedTo property locally after assignment
   const handleAssign = (ticketId, employeeId) => {
-    updateTicket(ticketId, { assignedTo: employeeId });
+    setTickets(prev =>
+      prev.map(ticket =>
+        ticket._id === ticketId ? { ...ticket, assignedTo: employeeId } : ticket
+      )
+    );
+    setShowAssignModal(false);
   };
 
+  // Stats data for PieChart
   const statsData = [
     { name: 'Open', value: tickets.filter(t => t.status === 'open').length },
     { name: 'Pending', value: tickets.filter(t => t.status === 'pending').length },
     { name: 'Resolved', value: tickets.filter(t => t.status === 'resolved').length }
   ];
 
+  // Tickets count by company
   const companyStats = tickets.reduce((acc, ticket) => {
-    acc[ticket.company] = (acc[ticket.company] || 0) + 1;
+    const companyName = ticket.company?.name || 'Unknown';
+    acc[companyName] = (acc[companyName] || 0) + 1;
     return acc;
   }, {});
 
@@ -45,7 +89,7 @@ const AdminDashboard = () => {
           <p className="text-gray-600">Manage all support tickets and assignments</p>
         </div>
         <div className="flex gap-3">
-          <Button 
+          <Button
             onClick={() => setShowExportModal(true)}
             className="flex items-center gap-2 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-gray-950"
           >
@@ -56,7 +100,7 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
-          <TicketStats />
+          <TicketStats tickets={tickets} />
         </div>
         <Card className="p-5 flex flex-col items-center justify-center">
           <h3 className="text-lg font-semibold mb-4">Status Distribution</h3>
@@ -77,10 +121,15 @@ const AdminDashboard = () => {
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-4">
             {tickets.slice(0, 4).map(ticket => (
-              <div key={ticket.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div
+                key={ticket._id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+              >
                 <div>
-                  <h4 className="font-medium">{ticket.title}</h4>
-                  <p className="text-sm text-gray-500">{ticket.company} • {ticket.status}</p>
+                  <h4 className="font-medium">{ticket.subject || ticket.title}</h4>
+                  <p className="text-sm text-gray-500">
+                    {ticket.company?.name} • {ticket.status}
+                  </p>
                 </div>
                 <span className="text-sm text-gray-500">
                   {new Date(ticket.createdAt).toLocaleDateString()}
@@ -99,14 +148,15 @@ const AdminDashboard = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FaSearch className="text-gray-400" />
               </div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search tickets..."
                 className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                // Search functionality optional - implement if needed
               />
             </div>
             <div className="relative">
-              <select 
+              <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 className="py-2 px-4 pr-8 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
@@ -122,8 +172,9 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        <TicketList 
-          filter={filter} 
+        <TicketList
+          tickets={filteredTickets}
+          employees={employees}
           onAssignClick={(ticket) => {
             setSelectedTicket(ticket);
             setShowAssignModal(true);
@@ -132,15 +183,16 @@ const AdminDashboard = () => {
       </Card>
 
       {showAssignModal && selectedTicket && (
-        <AssignTicketModal 
+        <AssignTicketModal
           ticket={selectedTicket}
+          employees={employees}
           onClose={() => setShowAssignModal(false)}
           onAssign={handleAssign}
         />
       )}
 
       {showExportModal && (
-        <ExportModal 
+        <ExportModal
           onClose={() => setShowExportModal(false)}
           onExport={(format) => {
             alert(`Exporting data as ${format.toUpperCase()}...`);
@@ -150,4 +202,5 @@ const AdminDashboard = () => {
     </div>
   );
 };
+
 export default AdminDashboard;

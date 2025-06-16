@@ -2,17 +2,25 @@ import { useState } from 'react';
 import { FaTimes, FaUserCheck } from 'react-icons/fa';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
-import { dummyUsers } from '../../data/dummyUsers';
+import api from '../../utils/api';
 
-const AssignTicketModal = ({ ticket, onClose, onAssign }) => {
+const AssignTicketModal = ({ ticket, onClose, onAssign, employees }) => {
   const [selectedEmployee, setSelectedEmployee] = useState('');
-  const employees = dummyUsers.filter(user => user.role === 'employee');
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedEmployee) {
-      onAssign(ticket.id, selectedEmployee);
+    if (!selectedEmployee) return;
+
+    try {
+      // Backend call - assign ticket
+      await api.patch(`/tickets/${ticket._id}/assign`, {
+        assignedTo: selectedEmployee,
+      });
+      onAssign(ticket._id, selectedEmployee);
+      console.log(ticket._id, selectedEmployee)
       onClose();
+    } catch (error) {
+      console.error('Ticket assignment failed:', error.response?.data || error);
+      // Optionally show error to user
     }
   };
 
@@ -21,7 +29,7 @@ const AssignTicketModal = ({ ticket, onClose, onAssign }) => {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="p-5 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-semibold text-gray-800">
-            Assign Ticket #{ticket.id.slice(-6)}
+            Assign Ticket #{ticket._id.slice(-6)}
           </h3>
           <button 
             onClick={onClose}
@@ -39,15 +47,15 @@ const AssignTicketModal = ({ ticket, onClose, onAssign }) => {
             <div className="space-y-3">
               {employees.map(employee => (
                 <label 
-                  key={employee.id}
+                  key={employee._id}
                   className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
                 >
                   <input
                     type="radio"
                     name="employee"
-                    value={employee.id}
-                    checked={selectedEmployee === employee.id}
-                    onChange={() => setSelectedEmployee(employee.id)}
+                    value={employee._id}
+                    checked={selectedEmployee === employee._id}
+                    onChange={() => setSelectedEmployee(employee._id)}
                     className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                   />
                   <div className="flex items-center gap-3">
@@ -85,4 +93,5 @@ const AssignTicketModal = ({ ticket, onClose, onAssign }) => {
     </Modal>
   );
 };
+
 export default AssignTicketModal;

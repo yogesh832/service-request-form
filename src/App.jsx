@@ -1,172 +1,101 @@
-// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// import { AuthProvider, useAuth } from './context';
-// import { TicketProvider } from './context/TicketContext';
-// import Home from './pages/Home';
-// import Dashboard from './pages/Dashboard';
-// import Tickets from './pages/Tickets';
-// import Profile from './pages/Profile';
-// import NotFound from './pages/NotFound';
-// import DashboardLayout from './layouts/DashboardLayout';
-// import LoginForm from './components/auth/LoginForm';
-// import SignupForm from './components/auth/SignupForm';
-// import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
-
-// // Private route component
-// const PrivateRoute = ({ children }) => {
-//   const { user } = useAuth();
-//   return user ? children : <Navigate to="/login" replace />;
-// };
-
-// // Role-based route component
-// const RoleRoute = ({ roles, children }) => {
-//   const { user } = useAuth();
-//   return user && roles.includes(user.role) ? children : <Navigate to="/" replace />;
-// };
-
-// function App() {
-//   return (
-//     <AuthProvider>
-//       <TicketProvider>
-//         <Router>
-//           <Routes>
-//             <Route path="/" element={<Home />} />
-//             <Route path="/login" element={<LoginForm />} />
-//             <Route path="/signup" element={<SignupForm />} />
-//             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-            
-//             <Route path="/dashboard" element={
-//               <PrivateRoute>
-//                 <DashboardLayout>
-//                   <Dashboard />
-//                 </DashboardLayout>
-//               </PrivateRoute>
-//             } />
-            
-//             <Route path="/tickets" element={
-//               <PrivateRoute>
-//                 <DashboardLayout>
-//                   <Tickets />
-//                 </DashboardLayout>
-//               </PrivateRoute>
-//             } />
-            
-//             <Route path="/profile" element={
-//               <PrivateRoute>
-//                 <DashboardLayout>
-//                   <Profile />
-//                 </DashboardLayout>
-//               </PrivateRoute>
-//             } />
-            
-//             <Route path="/admin" element={
-//               <RoleRoute roles={['admin']}>
-//                 <DashboardLayout>
-//                   <Dashboard />
-//                 </DashboardLayout>
-//               </RoleRoute>
-//             } />
-            
-//             <Route path="*" element={<NotFound />} />
-//           </Routes>
-//         </Router>
-//       </TicketProvider>
-//     </AuthProvider>
-//   );
-// }
-
-// export default App;
-
-
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context';
-import { TicketProvider } from './context/TicketContext';
-
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import Tickets from './pages/Tickets';
-import Profile from './pages/Profile';
-import NotFound from './pages/NotFound';
-import DashboardLayout from './layouts/DashboardLayout';
 import LoginForm from './components/auth/LoginForm';
 import SignupForm from './components/auth/SignupForm';
 import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
+import ResetPasswordForm from './components/auth/ResetPasswordForm';
+import NotFound from './pages/NotFound';
+import DashboardLayout from './layouts/DashboardLayout';
+import Dashboard from './pages/Dashboard';
+import Tickets from './pages/Tickets';
+import Profile from './pages/Profile';
 import AnalyticsPage from './pages/Analytics';
 import SettingsPage from './pages/Settings';
 import Clients from './pages/Clients';
+import AdminAnalytics from './components/dashboard/AdminAnalytics';
+import ClientAnalytics from './components/dashboard/ClientAnalytics';
 
+// PrivateRoute component
+const PrivateRoute = ({ children, roles }) => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
 
 function App() {
   return (
-    <AuthProvider>
-      <TicketProvider>
-        {/* <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/signup" element={<SignupForm />} />
-            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
 
-            <Route
-              path="/dashboard"
-              element={
-                <DashboardLayout>
-                  <Dashboard />
-                </DashboardLayout>
-              }
-            />
-            <Route
-              path="/tickets"
-              element={
-                <DashboardLayout>
-                  <Tickets />
-                </DashboardLayout>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <DashboardLayout>
-                  <Profile />
-                </DashboardLayout>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <DashboardLayout>
-                  <Dashboard />
-                </DashboardLayout>
-              }
-            />
+        {/* Dashboard Routes */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={
+            <PrivateRoute roles={['admin', 'employee', 'client']}>
+              <Dashboard />
+            </PrivateRoute>
+          } />
+          <Route path="tickets" element={
+            <PrivateRoute roles={['employee', 'client', 'admin']}>
+              <Tickets />
+            </PrivateRoute>
+          } />
+          <Route path="profile" element={
+            <PrivateRoute roles={['admin', 'employee', 'client']}>
+              <Profile />
+            </PrivateRoute>
+          } />
+          <Route path="analytics" element={
+            <PrivateRoute roles={['admin' , 'employee']}>
+              <AnalyticsPage />
+            </PrivateRoute>
+          } />
+                    <Route path="admin-analytics" element={
+            <PrivateRoute roles={['admin']}>
+              <AdminAnalytics />
+            </PrivateRoute>
+          } />
+          <Route path="client-analytics" element={
+            <PrivateRoute roles={['admin', 'client', 'employee']}>
+              <ClientAnalytics />
+            </PrivateRoute>
+          } />
+          <Route path="clients" element={
+            <PrivateRoute roles={['admin']}>
+              <Clients />
+            </PrivateRoute>
+          } />
+          <Route path="settings" element={
+            <PrivateRoute roles={['admin']}>
+              <SettingsPage />
+            </PrivateRoute>
+          } />
+        </Route>
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router> */}
-        <Router>
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/login" element={<LoginForm />} />
-    <Route path="/signup" element={<SignupForm />} />
-    <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-
-    {/* Dashboard layout as parent route */}
-    <Route path="/dashboard" element={<DashboardLayout />}>
-      <Route index element={<Dashboard />} /> {/* default /dashboard */}
-      <Route path="tickets" element={<Tickets />} />
-      <Route path="profile" element={<Profile />} />
-         <Route path="analytics" element={<AnalyticsPage />} />
-            <Route path="clients" element={<Clients />} />
-      <Route path="settings" element={<SettingsPage />} />
-      {/* you can add more nested routes here */}
-    </Route>
-
-    <Route path="*" element={<NotFound />} />
-  </Routes>
-</Router>
-
-      </TicketProvider>
-    </AuthProvider>
+        {/* Catch-all */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 

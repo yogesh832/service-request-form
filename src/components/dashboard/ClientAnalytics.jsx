@@ -1,12 +1,26 @@
 import { FaTicketAlt, FaClock, FaCheckCircle, FaChartLine } from 'react-icons/fa';
 import Card from '../ui/Card';
 import BarChart from '../ui/Charts/BarChart';
-import { useTickets } from '../../context/TicketContext';
-import { formatDate } from '../../utils/helpers';
 
+import { formatDate } from '../../utils/helpers';
+import { useEffect ,useState } from 'react';
+import api from '../../utils/api';
 const ClientAnalytics = () => {
-  const { tickets } = useTickets();
-  
+const [tickets, setTickets] = useState([]);
+
+useEffect(() => {
+  const fetchTickets = async () => {
+    try {
+      const res = await api.get('/tickets');
+      setTickets(res.data.data.tickets || []);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    }
+  };
+  fetchTickets();
+}, []);
+
+
   // Calculate statistics
   const ticketStats = {
     open: tickets.filter(t => t.status === 'open').length,
@@ -125,7 +139,7 @@ const ClientAnalytics = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {recentResolved.map(ticket => (
-                <tr key={ticket.id}>
+                <tr key={ticket._id}>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{ticket.id.slice(-6)}</td>
                   <td className="px-4 py-4 text-sm text-gray-900">{ticket.title}</td>
                   <td className="px-4 py-4 whitespace-nowrap">

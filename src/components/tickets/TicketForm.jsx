@@ -1,35 +1,43 @@
 import { useState } from 'react';
 import { FaTimes, FaPaperclip } from 'react-icons/fa';
-import { useTickets } from '../../context/TicketContext';
+import api from '../../utils/api';
 import Modal from '../ui/Modal';
+import Button from '../ui/Button';    
 
-const TicketForm = ({ onClose }) => {
+const TicketForm = ({ onClose, onTicketCreated }) => {
   const [formData, setFormData] = useState({
-    title: '',
+    subject: '',
     category: 'technical',
     priority: 'medium',
     description: '',
     attachments: []
   });
   
-  const { addTicket } = useTickets();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Token:', localStorage.getItem('token'));
+console.log('Form Data:', formData);
+
     setIsSubmitting(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      addTicket(formData);
-      setIsSubmitting(false);
+    try {
+      const response = await api.post('/tickets', formData);
+      onTicketCreated(response.data.data.ticket);
       onClose();
-    }, 800);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create ticket');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,16 +53,22 @@ const TicketForm = ({ onClose }) => {
           </button>
         </div>
         
+        {error && (
+          <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 rounded-lg">
+            {error}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title *
+                Subject *
               </label>
               <input
                 type="text"
-                name="title"
-                value={formData.title}
+                name="subject"
+                value={formData.subject}
                 onChange={handleChange}
                 className="w-full py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 required

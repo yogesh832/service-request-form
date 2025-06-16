@@ -1,19 +1,28 @@
 import { FaBell, FaUserCircle, FaSearch, FaBars } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
 import Notification from './Notification';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Header = ({ toggleSidebar }) => {
-    const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
-    const handleLogout = () =>{
-    logout();
-    navigate('/login')
-  }
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
   return (
-    <header className="sticky  top-0 z-40 bg-white shadow-sm border-b border-gray-200">
+    <header className="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
           <button 
@@ -43,32 +52,34 @@ const Header = ({ toggleSidebar }) => {
               <FaBell className="text-gray-600" size={18} />
               <span className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
             </button>
-            
             {showNotifications && (
               <Notification onClose={() => setShowNotifications(false)} />
             )}
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:block text-right">
-              <p className="font-medium text-gray-800">{user?.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
-            </div>
-            <div className="relative group">
-              <FaUserCircle className="text-gray-600" size={32} />
-              <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
-                <button 
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Sign out
-                </button>
+          {user && (
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:block text-right">
+                <p className="font-medium text-gray-800">{user?.name}</p>
+                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+              </div>
+              <div className="relative group">
+                <FaUserCircle className="text-gray-600" size={32} />
+                <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
+                  <button 
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </header>
   );
 };
+
 export default Header;

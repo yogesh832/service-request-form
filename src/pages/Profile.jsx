@@ -1,32 +1,64 @@
-import { FaUser, FaEnvelope, FaBuilding, FaSave, FaLock } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext';
-import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
+import { FaUser, FaEnvelope, FaBuilding, FaLock, FaSave } from 'react-icons/fa';
+import Card from '../components/ui/Card';
 
 const Profile = () => {
-  const { user } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
-  
-  // For demo purposes
   const [profileData, setProfileData] = useState({
-    name: user?.name || 'deepak',
-    email: user?.email || 'dl@gmail.com',
-    company: user?.company || 'ddd',
-    role: user?.role || 'ddd'
+    name: '',
+    email: '',
+    company: '',
+    role: ''
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('user'));
+
+      console.log('User from localStorage:', userData);
+
+      const response = await api.get(`/users/me`);
+      console.log('Fetched profile:', response.data.data.user);
+      setProfileData(response.data.data.user);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.patch(`/users/me`, profileData);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Error updating profile:', err);
+    }
+  };
+
+  if (loading) return <div>Loading profile...</div>;
+
+  // Import missing icons and Card component
+
+  // Add handleChange function
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({ ...prev, [name]: value }));
+    setProfileData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsEditing(false);
-    // In a real app, this would update the user's profile
-  };
-
+  // Use profileData instead of user
   return (
     <div className="space-y-6">
       <div>
@@ -39,11 +71,11 @@ const Profile = () => {
           <Card className="p-5">
             <div className="flex flex-col items-center">
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
-                {user?.name.charAt(0)}
+                {profileData?.name?.charAt(0)}
               </div>
-              <h2 className="text-xl font-bold text-gray-800">{user?.name}</h2>
-              <p className="text-gray-600 capitalize">{user?.role}</p>
-              <p className="text-sm text-gray-500 mt-1">{user?.company}</p>
+              <h2 className="text-xl font-bold text-gray-800">{profileData?.name}</h2>
+              <p className="text-gray-600 capitalize">{profileData?.role}</p>
+              <p className="text-sm text-gray-500 mt-1">{profileData?.company}</p>
             </div>
             
             <div className="mt-8 space-y-4">
@@ -93,7 +125,7 @@ const Profile = () => {
               )}
             </div>
             
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -178,6 +210,9 @@ const Profile = () => {
                 </label>
                 <textarea
                   rows={3}
+                  name="bio"
+                  value={profileData.bio || ''}
+                  onChange={handleChange}
                   disabled={!isEditing}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition disabled:bg-gray-100"
                   placeholder="Tell us a little about yourself..."

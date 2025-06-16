@@ -4,13 +4,14 @@ import TicketForm from '../components/tickets/TicketForm';
 import TicketList from '../components/tickets/TicketList';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import { useAuth } from '../context/AuthContext';
+
 import { de } from 'date-fns/locale';
 
 const Tickets = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [filter, setFilter] = useState('all');
-  const { user } = useAuth();
+  const user = useState(JSON.parse(localStorage.getItem('user')));
+ 
 
   return (
     <div className="space-y-6">

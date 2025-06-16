@@ -1,23 +1,55 @@
-import { useState } from 'react';
-import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaUser, FaEnvelope, FaPhone, FaChartBar } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaUser, FaEnvelope, FaPhone, FaChartBar, FaTimes } from 'react-icons/fa';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
-import { dummyCompanies } from '../data/dummyCompanies';
-import { dummyTickets } from '../data/dummyTickets';
-import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/helpers';
-
+import api from '../utils/api';
 const Clients = () => {
-  const { user } = useAuth();
+ 
   const [showClientModal, setShowClientModal] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [ticketsData, setTicketsData] = useState([]); // Assuming tickets data is fetched from an API
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
-  
+const [formData, setFormData] = useState({
+    name: '',
+    contact: '',
+    email: '',  
+    phone: '',
+    plan: 'Starter', // Default plan
+  });
+
+  // Fetch tickets data
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try { const 
+        response = await api.get('/tickets'); // Adjust the endpoint as needed
+        console.log('Fetched tickets:', response.data.data.tickets);
+        setTicketsData(response.data.data.tickets);
+      } catch (error) {
+        console.error('Error fetching tickets:', error);  
+      }
+    };
+    fetchTickets();
+  }, []);
+  useEffect(() => {
+    // Fetch initial data if needed
+    const fetchCompanies = async () => {
+      try {
+        const response = await api.get('/companies'); // Adjust the endpoint as needed
+        console.log('Fetched companies:', response.data.data.companies);
+        setCompanies(response.data.data.companies);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+      }
+    };
+    fetchCompanies();
+  }, []);
   // Get ticket counts for each company
-  const companiesWithStats = dummyCompanies.map(company => {
-    const tickets = dummyTickets.filter(ticket => ticket.company === company.name);
+  const companiesWithStats = companies.map(company => {
+    const tickets = ticketsData.filter(ticket => ticket.company === company.name);
     return {
       ...company,
       ticketCount: tickets.length,
@@ -55,6 +87,30 @@ const Clients = () => {
   const handleSubmitClient = (e) => {
     e.preventDefault();
     // In a real app, this would create/update via API
+    api.post('/clients', {
+      name: e.target.name.value,  
+      contact: e.target.contact.value,
+      email: e.target.email.value,
+      phone: e.target.phone.value,
+      plan: e.target.plan.value,
+    }).then(response => {
+      console.log('Client saved:', response.data);
+
+
+      // Update local state with new or updated client
+      if (currentClient) {
+        setCompanies(prev =>
+          prev.map(c => c.id === currentClient.id ? response.data.data.client : c)
+        );
+
+
+      } else {
+        setCompanies(prev => [...prev, response.data.data.client]);
+      }
+    }).catch(error => {
+      console.error('Error saving client:', error);
+      alert('Failed to save client. Please try again.');
+    });
     alert(currentClient ? `Updating client ${currentClient.id}` : 'Creating new client');
     setShowClientModal(false);
     setCurrentClient(null);
