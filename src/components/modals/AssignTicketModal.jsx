@@ -4,23 +4,27 @@ import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import api from '../../utils/api';
 
-const AssignTicketModal = ({ ticket, onClose, onAssign, employees }) => {
+const AssignTicketModal = ({ ticket, onClose, employees, onAssignSuccess }) => {
   const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedEmployee) return;
-
+    
     try {
-      // Backend call - assign ticket
+      setIsSubmitting(true);
       await api.patch(`/tickets/${ticket._id}/assign`, {
         assignedTo: selectedEmployee,
       });
-      onAssign(ticket._id, selectedEmployee);
-      console.log(ticket._id, selectedEmployee)
+      onAssignSuccess(ticket._id, selectedEmployee);
       onClose();
     } catch (error) {
-      console.error('Ticket assignment failed:', error.response?.data || error);
-      // Optionally show error to user
+      setError(error.response?.data?.message || 'Assignment failed');
+      console.error('Ticket assignment failed:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -29,7 +33,7 @@ const AssignTicketModal = ({ ticket, onClose, onAssign, employees }) => {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="p-5 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-semibold text-gray-800">
-            Assign Ticket #{ticket._id.slice(-6)}
+            Ticket Number {ticket.ticketNumber}
           </h3>
           <button 
             onClick={onClose}
@@ -72,20 +76,29 @@ const AssignTicketModal = ({ ticket, onClose, onAssign, employees }) => {
             </div>
           </div>
           
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
+          
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
               onClick={onClose}
               variant="secondary"
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={!selectedEmployee}
+              disabled={!selectedEmployee || isSubmitting}
               className="flex items-center gap-2"
             >
-              <FaUserCheck /> Assign Ticket
+              {isSubmitting ? 'Assigning...' : (
+                <>
+                  <FaUserCheck /> Assign Ticket
+                </>
+              )}
             </Button>
           </div>
         </form>

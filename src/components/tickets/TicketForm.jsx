@@ -7,6 +7,7 @@ import Button from '../ui/Button';
 const TicketForm = ({ onClose, onTicketCreated }) => {
   const [formData, setFormData] = useState({
     subject: '',
+    phone: '',
     category: 'technical',
     priority: 'medium',
     description: '',
@@ -15,30 +16,34 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  // Add this state
+const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Token:', localStorage.getItem('token'));
-console.log('Form Data:', formData);
-
-    setIsSubmitting(true);
-    setError('');
-    
-    try {
-      const response = await api.post('/tickets', formData);
+// Update handleSubmit
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError('');
+  
+  try {
+    const response = await api.post('/tickets', formData);
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
       onTicketCreated(response.data.data.ticket);
       onClose();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create ticket');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    }, 3000);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Failed to create ticket');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <Modal onClose={onClose}>
@@ -58,9 +63,18 @@ console.log('Form Data:', formData);
             {error}
           </div>
         )}
+        {/* // Add this component in return */}
+{showSuccess && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-8 rounded-lg text-center">
+      <h3 className="text-2xl font-bold text-gray-800 mb-4">We Will Revert You Soon</h3>
+      <p>Your ticket has been submitted successfully.</p>
+    </div>
+  </div>
+)}
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Subject *
@@ -78,6 +92,20 @@ console.log('Form Data:', formData);
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Mobile Number
+              </label>
+<input
+  type="tel"
+  name="phone"
+  value={formData.phone}
+  onChange={handleChange}
+  placeholder='Enter your mobile number'
+/>
+
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category *
               </label>
               <select
@@ -89,7 +117,8 @@ console.log('Form Data:', formData);
                 <option value="technical">Technical Issue</option>
                 <option value="billing">Billing Inquiry</option>
                 <option value="account">Account Support</option>
-                <option value="general">General Question</option>
+                <option value="delivery">Delivery Issue</option>
+                <option value="general">Other Complaint</option>
               </select>
             </div>
           </div>

@@ -103,7 +103,7 @@ const Sidebar = ({ isOpen, toggle }) => {
           <div className="bg-white p-2 rounded-lg">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div>
           </div>
-          <h1 className="text-xl font-bold">SupportHub</h1>
+          <h1 className="text-xl font-bold">SALKA TECH</h1>
         </div>
       </div>
 

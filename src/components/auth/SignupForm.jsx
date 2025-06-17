@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { FaUser, FaLock, FaEnvelope, FaBuilding } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import api from '../../utils/api';
 
 const SignupForm = () => {
@@ -8,17 +9,49 @@ const SignupForm = () => {
     name: '',
     email: '',
     password: '',
-    company: '',
-    role: 'employee', // keep default role
+    phone: '',
+    company: null,
+    role: 'client', // Default role
   });
+
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const res = await api.get('/companies');
+        console.log('Fetched companies:', res.data.data.companies);
+        const companyOptions = res.data.data.companies.map((company) => ({
+          label: company.name,
+          value: company._id,
+        }));
+        setCompanies(companyOptions);
+      } catch (err) {
+        console.error('Failed to fetch companies:', err);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    }));
+  };
+
+  const handleCompanyChange = (selectedOption) => {
+    setSelectedCompany(selectedOption);
+    console.log('Selected company:', selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      company: selectedOption ? selectedOption.value : '',
     }));
   };
 
@@ -31,7 +64,6 @@ const SignupForm = () => {
       await api.post('/auth/register', formData);
       navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
-      // If server sends validation or other errors in a different format, adjust here accordingly
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -40,7 +72,7 @@ const SignupForm = () => {
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-white px-4 py-8">
-      <div className="max-w-md w-full p-8 rounded-2xl shadow-xl bg-gradient-to-br from-white to-gray-50 border border-gray-100">
+      <div className="max-w-md w-full p-8 rounded-2xl shadow-xl bg-white border border-gray-100">
         <div className="text-center mb-8">
           <div className="mx-auto bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <FaUser className="text-white text-2xl" />
@@ -66,7 +98,7 @@ const SignupForm = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 placeholder="Full Name"
                 required
               />
@@ -81,8 +113,23 @@ const SignupForm = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 placeholder="Email Address"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FaPhone className="text-gray-400" />
+              </div>
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                placeholder="Phone Number"
                 required
               />
             </div>
@@ -96,25 +143,32 @@ const SignupForm = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 placeholder="Password"
                 minLength={6}
                 required
               />
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaBuilding className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                placeholder="Company Name"
-                required
+            {/* <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              required
+            >
+              <option value="client">Client</option>
+              <option value="admin">Admin</option>
+            </select> */}
+
+            <div>
+              <label className="block text-gray-700 mb-1">Select Company</label>
+              <Select
+                value={selectedCompany}
+                onChange={handleCompanyChange}
+                options={companies}
+                placeholder="Search and select a company"
+                isClearable={false}
               />
             </div>
           </div>
@@ -161,10 +215,7 @@ const SignupForm = () => {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{' '}
-            <Link
-              to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 transition"
-            >
+            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Sign in
             </Link>
           </p>
