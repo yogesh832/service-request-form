@@ -1,7 +1,7 @@
 // src/components/auth/ResetPasswordForm.jsx
 import { useState } from 'react';
 import { FaLock, FaCheckCircle } from 'react-icons/fa';
-import axios from 'axios';
+import api from '../../utils/api';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
 const ResetPasswordForm = () => {
@@ -32,8 +32,7 @@ const ResetPasswordForm = () => {
     
     try {
       // Make API request to reset password endpoint
-      await axios.patch(`https://5vwd9w13-5000.inc1.devtunnels.ms/api/auth/resetpassword/${token}`, {
-   
+      await api.patch(`/auth/resetpassword/${token}`, {
         password
       });
       

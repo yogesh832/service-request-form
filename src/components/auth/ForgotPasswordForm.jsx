@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaEnvelope } from 'react-icons/fa';
-import axios from 'axios';
+import api from '../../utils/api';
 import { Link } from 'react-router-dom';
 
 const ForgotPasswordForm = () => {
@@ -16,7 +16,7 @@ const ForgotPasswordForm = () => {
     
     try {
       // Make API request to forgot password endpoint
-      await axios.post('https://5vwd9w13-5000.inc1.devtunnels.ms/api/auth/forgotpassword', { email });
+      await api.post('/auth/forgotpassword', { email });
       
       // Show success message
       setIsSubmitted(true);

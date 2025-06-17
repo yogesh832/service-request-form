@@ -19,6 +19,7 @@ const AssignTicketModal = ({ ticket, onClose, employees, onAssignSuccess }) => {
         assignedTo: selectedEmployee,
       });
       onAssignSuccess(ticket._id, selectedEmployee);
+
       onClose();
     } catch (error) {
       setError(error.response?.data?.message || 'Assignment failed');

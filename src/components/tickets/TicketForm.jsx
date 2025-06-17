@@ -118,7 +118,7 @@ const handleSubmit = async (e) => {
                 <option value="billing">Billing Inquiry</option>
                 <option value="account">Account Support</option>
                 <option value="delivery">Delivery Issue</option>
-                <option value="general">Other Complaint</option>
+                <option value="other">Other Complaint</option>
               </select>
             </div>
           </div>
