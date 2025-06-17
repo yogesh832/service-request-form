@@ -150,7 +150,7 @@ const SignupForm = () => {
               />
             </div>
 
-            {/* <select
+            <select
               name="role"
               value={formData.role}
               onChange={handleChange}
@@ -158,8 +158,8 @@ const SignupForm = () => {
               required
             >
               <option value="client">Client</option>
-              <option value="admin">Admin</option>
-            </select> */}
+              <option value="employee">Employee</option>
+            </select>
 
             <div>
               <label className="block text-gray-700 mb-1">Select Company</label>

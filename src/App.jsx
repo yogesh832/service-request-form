@@ -15,6 +15,9 @@ import Clients from './pages/Clients';
 import AdminAnalytics from './components/dashboard/AdminAnalytics';
 import ClientAnalytics from './components/dashboard/ClientAnalytics';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // PrivateRoute component
 const PrivateRoute = ({ children, roles }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -33,6 +36,19 @@ const PrivateRoute = ({ children, roles }) => {
 function App() {
   return (
     <Router>
+      {/* ToastContainer should be here once at top-level */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -70,7 +86,7 @@ function App() {
               <AnalyticsPage />
             </PrivateRoute>
           } />
-                    <Route path="admin-analytics" element={
+          <Route path="admin-analytics" element={
             <PrivateRoute roles={['admin']}>
               <AdminAnalytics />
             </PrivateRoute>
