@@ -5,51 +5,74 @@ import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import { formatDate } from '../utils/helpers';
 import api from '../utils/api';
+
 const Clients = () => {
- 
   const [showClientModal, setShowClientModal] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
   const [companies, setCompanies] = useState([]);
-  const [ticketsData, setTicketsData] = useState([]); // Assuming tickets data is fetched from an API
+  const [ticketsData, setTicketsData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
-const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [formData, setFormData] = useState({
     name: '',
     contact: '',
-    email: '',  
+    email: '',
     phone: '',
-    plan: 'Starter', // Default plan
+    plan: 'Starter',
   });
 
-  // Fetch tickets data
+  // Fetch initial data
   useEffect(() => {
-    const fetchTickets = async () => {
-      try { const 
-        response = await api.get('/tickets'); // Adjust the endpoint as needed
-        console.log('Fetched tickets:', response.data.data.tickets);
-        setTicketsData(response.data.data.tickets);
-      } catch (error) {
-        console.error('Error fetching tickets:', error);  
-      }
-    };
-    fetchTickets();
-  }, []);
-  useEffect(() => {
-    // Fetch initial data if needed
-    const fetchCompanies = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/companies'); // Adjust the endpoint as needed
-        console.log('Fetched companies:', response.data.data.companies);
-        setCompanies(response.data.data.companies);
-      } catch (error) {
-        console.error('Error fetching companies:', error);
+        setLoading(true);
+        
+        // Fetch tickets
+        const ticketsResponse = await api.get('/tickets');
+        setTicketsData(ticketsResponse.data.data.tickets || []);
+        
+        // Fetch companies
+        const companiesResponse = await api.get('/companies');
+        setCompanies(companiesResponse.data.data.companies || []);
+        
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchCompanies();
+
+    fetchData();
   }, []);
-  // Get ticket counts for each company
+
+  // Update form data when editing a client
+  useEffect(() => {
+    if (currentClient) {
+      setFormData({
+        name: currentClient.name || '',
+        contact: currentClient.contact || '',
+        email: currentClient.email || '',
+        phone: currentClient.phone || '',
+        plan: currentClient.plan || 'Starter',
+      });
+    } else {
+      setFormData({
+        name: '',
+        contact: '',
+        email: '',
+        phone: '',
+        plan: 'Starter',
+      });
+    }
+  }, [currentClient]);
+
+  // Calculate company stats
   const companiesWithStats = companies.map(company => {
-    const tickets = ticketsData.filter(ticket => ticket.company === company.name);
+    const tickets = ticketsData.filter(ticket => ticket.company?._id === company._id || ticket.company === company.name);
     return {
       ...company,
       ticketCount: tickets.length,
@@ -58,11 +81,11 @@ const [formData, setFormData] = useState({
       resolvedTickets: tickets.filter(t => t.status === 'resolved').length,
     };
   });
-  
-  // Filter companies based on search and filter
+
+  // Filter companies
   const filteredCompanies = companiesWithStats.filter(company => {
     const matchesSearch = company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          company.contact.toLowerCase().includes(searchTerm.toLowerCase());
+                        company.contact.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesFilter = filter === 'all' || 
                          (filter === 'enterprise' && company.plan === 'Enterprise') ||
@@ -71,50 +94,59 @@ const [formData, setFormData] = useState({
     
     return matchesSearch && matchesFilter;
   });
-  
+
   const handleEditClient = (client) => {
     setCurrentClient(client);
     setShowClientModal(true);
   };
-  
-  const handleDeleteClient = (clientId) => {
+
+  const handleDeleteClient = async (clientId) => {
     if (window.confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
-      // In a real app, this would call an API endpoint
-      alert(`Client ${clientId} would be deleted in a real application`);
+      try {
+        await api.delete(`/companies/${clientId}`);
+        setCompanies(companies.filter(company => company._id !== clientId));
+        toast.success('Client deleted successfully');
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to delete client');
+      }
     }
   };
-  
-  const handleSubmitClient = (e) => {
+
+  const handleSubmitClient = async (e) => {
     e.preventDefault();
-    // In a real app, this would create/update via API
-    api.post('/clients', {
-      name: e.target.name.value,  
-      contact: e.target.contact.value,
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      plan: e.target.plan.value,
-    }).then(response => {
-      console.log('Client saved:', response.data);
-
-
-      // Update local state with new or updated client
+    
+    try {
+      let response;
+      
       if (currentClient) {
-        setCompanies(prev =>
-          prev.map(c => c.id === currentClient.id ? response.data.data.client : c)
-        );
-
-
+        // Update existing client
+        response = await api.patch(`/companies/${currentClient._id}`, formData);
+        setCompanies(companies.map(c => c._id === currentClient._id ? response.data.data.company : c));
+        toast.success('Client updated successfully');
       } else {
-        setCompanies(prev => [...prev, response.data.data.client]);
+        // Create new client
+        response = await api.post('/companies', formData);
+        setCompanies([...companies, response.data.data.company]);
+        toast.success('Client created successfully');
       }
-    }).catch(error => {
-      console.error('Error saving client:', error);
-      alert('Failed to save client. Please try again.');
-    });
-    alert(currentClient ? `Updating client ${currentClient.id}` : 'Creating new client');
-    setShowClientModal(false);
-    setCurrentClient(null);
+      
+      setShowClientModal(false);
+      setCurrentClient(null);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save client');
+    }
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
 
   return (
     <div className="space-y-6">
@@ -136,7 +168,7 @@ const [formData, setFormData] = useState({
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         {filteredCompanies.slice(0, 4).map(company => (
-          <Card key={company.id} className="p-5 hover:shadow-md transition-shadow">
+          <Card key={company._id} className="p-5 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-bold text-lg text-gray-800">{company.name}</h3>
@@ -225,7 +257,7 @@ const [formData, setFormData] = useState({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredCompanies.map(company => (
-                <tr key={company.id} className="hover:bg-gray-50">
+                <tr key={company._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mr-3">
@@ -295,7 +327,7 @@ const [formData, setFormData] = useState({
                       <FaEdit />
                     </button>
                     <button 
-                      onClick={() => handleDeleteClient(company.id)}
+                      onClick={() => handleDeleteClient(company._id)}
                       className="text-red-600 hover:text-red-900"
                     >
                       <FaTrash />
@@ -318,7 +350,7 @@ const [formData, setFormData] = useState({
         </div>
       </Card>
       
-      {/* Client Form Modal */}
+      {/* Client Form Modal - Conditionally rendered */}
       {showClientModal && (
         <Modal onClose={() => setShowClientModal(false)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
@@ -341,7 +373,9 @@ const [formData, setFormData] = useState({
                 </label>
                 <input
                   type="text"
-                  defaultValue={currentClient?.name || ''}
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="Acme Corporation"
                   required
@@ -354,7 +388,9 @@ const [formData, setFormData] = useState({
                 </label>
                 <input
                   type="text"
-                  defaultValue={currentClient?.contact || ''}
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleInputChange}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="John Smith"
                   required
@@ -367,7 +403,9 @@ const [formData, setFormData] = useState({
                 </label>
                 <input
                   type="email"
-                  defaultValue={currentClient?.email || ''}
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="contact@company.com"
                   required
@@ -380,7 +418,9 @@ const [formData, setFormData] = useState({
                 </label>
                 <input
                   type="tel"
-                  defaultValue={currentClient?.phone || ''}
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   placeholder="+1 (555) 123-4567"
                 />
@@ -391,8 +431,11 @@ const [formData, setFormData] = useState({
                   Plan Type *
                 </label>
                 <select
-                  defaultValue={currentClient?.plan || 'Starter'}
+                  name="plan"
+                  value={formData.plan}
+                  onChange={handleInputChange}
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  required
                 >
                   <option value="Starter">Starter</option>
                   <option value="Professional">Professional</option>
