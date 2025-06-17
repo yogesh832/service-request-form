@@ -6,7 +6,6 @@ import Modal from '../components/ui/Modal';
 import { formatDate } from '../utils/helpers';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
-
 const Clients = () => {
   const [showClientModal, setShowClientModal] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
@@ -130,7 +129,7 @@ const Clients = () => {
         setCompanies([...companies, response.data.data.company]);
         toast.success('Client created successfully');
       }
-      fetchData(); // Refresh data
+      // fetchData(); // Refresh data
       setShowClientModal(false);
       setCurrentClient(null);
     } catch (err) {
