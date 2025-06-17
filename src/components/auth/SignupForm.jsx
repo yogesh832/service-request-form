@@ -11,7 +11,7 @@ const SignupForm = () => {
     password: '',
     phone: '',
     company: null,
-    role: 'admin', // Default role
+    role: 'client', // Default role
   });
 
   const [companies, setCompanies] = useState([]);
