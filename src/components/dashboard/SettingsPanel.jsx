@@ -10,7 +10,8 @@ const SettingsPanel = () => {
     push: true,
     weeklyReport: true
   });
-  const user = JSON.parse(localStorage.getItem('user')); // Assuming user data is stored in localStorage
+  const user = JSON.parse(localStorage.getItem('user')); 
+  console.log(user); // Assuming user data is stored in localStorage
   if (!user) {
     return null;
   }
@@ -68,7 +69,7 @@ const SettingsPanel = () => {
                   <FaBuilding className="text-gray-500" />
                   <div>
                     <p className="text-sm text-gray-600">Company</p>
-                    <p className="font-medium">{user?.company}</p>
+                    <p className="font-medium">{user?.company?.name}</p>
                   </div>
                 </div>
               </div>
