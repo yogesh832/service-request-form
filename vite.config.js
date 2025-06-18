@@ -4,15 +4,15 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 1000, // Increase warning limit (in kB)
+    chunkSizeWarningLimit: 1000, // ✔️ Avoid warnings for larger chunks
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/react')) {
-            return 'react-vendor';
+            return 'react-vendor'; // ✔️ React-related code in one chunk
           }
           if (id.includes('node_modules')) {
-            return 'vendor';
+            return 'vendor'; // ✔️ All other third-party code in another
           }
         }
       }
