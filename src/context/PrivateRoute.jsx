@@ -18,6 +18,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
         }
       } catch (error) {
         setUser(null);
+        console.log(error);
       } finally {
         setLoading(false);
       }
