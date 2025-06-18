@@ -11,7 +11,8 @@ const Header = ({ toggleSidebar }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
     }
   }, []);
 
@@ -64,8 +65,32 @@ const Header = ({ toggleSidebar }) => {
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
               <div className="relative group">
-                <FaUserCircle className="text-gray-600" size={32} />
+                {user?.profilePhoto ? (
+                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
+                    <img 
+                      src={user.profilePhoto} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'path/to/default/avatar.png';
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-600 font-medium">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
                 <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
+                  <button 
+                    onClick={() => navigate('/profile')}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    My Profile
+                  </button>
                   <button 
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

@@ -3,8 +3,9 @@ import { FaTimes, FaUserCheck } from 'react-icons/fa';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import api from '../../utils/api';
+import { toast } from 'react-toastify';
 
-const AssignTicketModal = ({ ticket, onClose, employees, onAssignSuccess }) => {
+const AssignTicketModal = ({ ticket, employees, onClose, onAssign }) => {
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -18,11 +19,14 @@ const AssignTicketModal = ({ ticket, onClose, employees, onAssignSuccess }) => {
       await api.patch(`/tickets/${ticket._id}/assign`, {
         assignedTo: selectedEmployee,
       });
-      onAssignSuccess(ticket._id, selectedEmployee);
+      onAssign(ticket._id, selectedEmployee);
+      toast.success('Ticket assigned successfully');
+      setSelectedEmployee('');
 
       onClose();
     } catch (error) {
       setError(error.response?.data?.message || 'Assignment failed');
+      toast(error.response?.data?.message || 'Assignment failed');
       console.error('Ticket assignment failed:', error);
     } finally {
       setIsSubmitting(false);

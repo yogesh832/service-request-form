@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { FaTimes, FaPaperclip } from 'react-icons/fa';
+import { useState, useRef } from 'react';
+import { FaTimes, FaPaperclip, FaTrash } from 'react-icons/fa';
 import api from '../../utils/api';
 import Modal from '../ui/Modal';
-import Button from '../ui/Button';    
+import Button from '../ui/Button';
 
 const TicketForm = ({ onClose, onTicketCreated }) => {
   const [formData, setFormData] = useState({
@@ -11,39 +11,77 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
     category: 'technical',
     priority: 'medium',
     description: '',
-    attachments: []
   });
   
+  const [attachments, setAttachments] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  // Add this state
-const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-// Update handleSubmit
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError('');
-  
-  try {
-    const response = await api.post('/tickets', formData);
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      onTicketCreated(response.data.data.ticket);
-      onClose();
-    }, 3000);
-  } catch (err) {
-    setError(err.response?.data?.message || 'Failed to create ticket');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newAttachments = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+      name: file.name,
+      size: file.size,
+      type: file.type
+    }));
+    setAttachments(prev => [...prev, ...newAttachments]);
+  };
+
+  const removeAttachment = (index) => {
+    const newAttachments = [...attachments];
+    URL.revokeObjectURL(newAttachments[index].preview);
+    newAttachments.splice(index, 1);
+    setAttachments(newAttachments);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const formDataToSend = new FormData();
+      
+      // Append regular form data
+      formDataToSend.append('subject', formData.subject);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('priority', formData.priority);
+      formDataToSend.append('description', formData.description);
+
+      // Append files if any
+      attachments.forEach((attachment, index) => {
+        formDataToSend.append(`attachments`, attachment.file);
+      });
+
+      const response = await api.post('/tickets', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onTicketCreated(response.data.data.ticket);
+        onClose();
+      }, 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create ticket');
+      console.error('Error creating ticket:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Modal onClose={onClose}>
@@ -63,15 +101,15 @@ const handleSubmit = async (e) => {
             {error}
           </div>
         )}
-        {/* // Add this component in return */}
-{showSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white p-8 rounded-lg text-center">
-      <h3 className="text-2xl font-bold text-gray-800 mb-4">We Will Revert You Soon</h3>
-      <p>Your ticket has been submitted successfully.</p>
-    </div>
-  </div>
-)}
+
+        {showSuccess && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg text-center">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">We Will Revert You Soon</h3>
+              <p>Your ticket has been submitted successfully.</p>
+            </div>
+          </div>
+        )}
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -94,14 +132,14 @@ const handleSubmit = async (e) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Mobile Number
               </label>
-<input
-  type="tel"
-  name="phone"
-  value={formData.phone}
-  onChange={handleChange}
-  placeholder='Enter your mobile number'
-/>
-
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                placeholder="Enter your mobile number"
+              />
             </div>
             
             <div>
@@ -151,16 +189,48 @@ const handleSubmit = async (e) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Attachments
               </label>
-              <div className="flex items-center justify-center w-full">
-                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <div className="flex flex-col gap-2">
+                <div 
+                  className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  onClick={() => fileInputRef.current.click()}
+                >
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
                     <FaPaperclip className="w-8 h-8 mb-2 text-gray-400" />
                     <p className="text-sm text-gray-500">
                       <span className="font-semibold text-blue-600">Click to upload</span> or drag and drop
                     </p>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      className="hidden" 
+                      multiple
+                      onChange={handleFileChange}
+                      accept="image/*,.pdf,.doc,.docx"
+                    />
                   </div>
-                  <input type="file" className="hidden" />
-                </label>
+                </div>
+                
+                {attachments.length > 0 && (
+                  <div className="space-y-2">
+                    {attachments.map((attachment, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center truncate">
+                          <span className="truncate">{attachment.name}</span>
+                          <span className="text-xs text-gray-500 ml-2">
+                            {(attachment.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAttachment(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -207,4 +277,5 @@ const handleSubmit = async (e) => {
     </Modal>
   );
 };
+
 export default TicketForm;

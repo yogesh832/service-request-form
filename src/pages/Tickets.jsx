@@ -1,16 +1,46 @@
-import { useState } from 'react';
+import { useState ,useEffect } from 'react';
 import { FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
 import TicketForm from '../components/tickets/TicketForm';
 import TicketList from '../components/tickets/TicketList';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-
 import { de } from 'date-fns/locale';
+import api from '../utils/api';
 
 const Tickets = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [filter, setFilter] = useState('all');
-  const user = useState(JSON.parse(localStorage.getItem('user')));
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+        
+        const response = await api.get('/tickets');
+        setTickets(response.data.data.tickets);
+      } catch (err) {
+        setError('Failed to load tickets');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="text-center py-12">Loading tickets...</div>;
+  if (error) return <div className="text-center py-12 text-red-500">{error}</div>;
+  const filteredTickets = tickets.filter(ticket => {
+    if (filter === 'all') return true;
+    return ticket.status === filter;
+  });
  
 
   return (
@@ -35,9 +65,9 @@ const Tickets = () => {
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-gray-800">All Tickets</h2>
-            <span className="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full text-sm font-medium">
-              24
-            </span>
+      <span className="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full text-sm font-medium">
+  {filteredTickets.length}
+</span>
           </div>
           <div className="flex gap-3">
             <div className="relative">
@@ -67,7 +97,7 @@ const Tickets = () => {
             </div>
           </div>
         </div>
-        <TicketList filter={filter} />
+        <TicketList tickets={filteredTickets} />
       </Card>
 
       {showTicketForm && (

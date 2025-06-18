@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaPlus, FaSearch, FaFilter, FaFileExport } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaFileExport } from 'react-icons/fa';
 import AssignTicketModal from '../modals/AssignTicketModal';
 import ExportModal from '../modals/ExportModal';
 import TicketList from '../tickets/TicketList';
@@ -8,43 +8,84 @@ import Button from '../ui/Button';
 import TicketStats from '../tickets/TicketStats';
 import BarChart from '../ui/Charts/BarChart';
 import PieChart from '../ui/Charts/PieChart';
-import api from '../../utils/api'; // aapka api instance jisme api.get hota hai
+import api from '../../utils/api';
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [employees, setEmployees] = useState([]);
-
   const [showAssignModal, setShowAssignModal] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Fetch tickets data
+  // Fetch initial data
   useEffect(() => {
-    const fetchTickets = async () => {
+    const fetchData = async () => {
       try {
+        setLoading(true);
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setCurrentUser(userData);
+        
         const res = await api.get('/tickets');
-        setTickets(res.data.data.tickets); // assume response contains tickets array directly
-      } catch (error) {
-        console.error('Error fetching tickets:', error);
+        setTickets(res.data.data.tickets);
+      } catch (err) {
+        setError('Failed to load tickets');
+        console.error('Error fetching tickets:', err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchTickets();
+    fetchData();
   }, []);
 
-  // Fetch employees data
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const res = await api.get('/users/employees');
-        console.log('Fetched employees:', res.data.data);
-        setEmployees(res.data.data.users); // assume response contains employees array directly
-      } catch (error) {
-        console.error('Error fetching employees:', error);
-      }
-    };
-    fetchEmployees();
-  }, []);
+  // Fetch employees for a specific ticket
+  const fetchEmployeesForTicket = async (ticketId) => {
+    try {
+      console.log('Fetching employees for ticket:', ticketId);
+      const res = await api.get(`/tickets/${ticketId}/employees`);
+      setEmployees(res.data.data.employees);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  };
+
+  // Handle ticket selection
+
+
+  // Handle assign button click
+  const handleAssignClick = (ticketId) => {
+    setSelectedTicketId(ticketId);
+    console.log('Assigning ticket:', ticketId);
+
+    fetchEmployeesForTicket(ticketId);
+    setShowAssignModal(true);
+  };
+
+  // Handle ticket assignment
+  const handleAssign = async (ticketId, employeeId) => {
+    try {
+      await api.patch(`/tickets/${ticketId}/assign`, { 
+        assignedTo: employeeId 
+      });
+      
+      setTickets(prev =>
+        prev.map(ticket =>
+          ticket._id === ticketId 
+            ? { 
+                ...ticket, 
+                assignedTo: employees.find(e => e._id === employeeId) 
+              } 
+            : ticket
+        )
+      );
+      setShowAssignModal(false);
+    } catch (error) {
+      console.error('Assignment failed:', error);
+    }
+  };
 
   // Filter tickets based on status
   const filteredTickets = tickets.filter(ticket => {
@@ -52,24 +93,13 @@ const AdminDashboard = () => {
     return ticket.status === filter;
   });
 
-  // Update ticket assignedTo property locally after assignment
-  const handleAssign = (ticketId, employeeId) => {
-    setTickets(prev =>
-      prev.map(ticket =>
-        ticket._id === ticketId ? { ...ticket, assignedTo: employeeId } : ticket
-      )
-    );
-    setShowAssignModal(false);
-  };
-
-  // Stats data for PieChart
+  // Prepare data for charts
   const statsData = [
     { name: 'Open', value: tickets.filter(t => t.status === 'open').length },
     { name: 'Pending', value: tickets.filter(t => t.status === 'pending').length },
     { name: 'Resolved', value: tickets.filter(t => t.status === 'resolved').length }
   ];
 
-  // Tickets count by company
   const companyStats = tickets.reduce((acc, ticket) => {
     const companyName = ticket.company?.name || 'Unknown';
     acc[companyName] = (acc[companyName] || 0) + 1;
@@ -81,8 +111,31 @@ const AdminDashboard = () => {
     value
   }));
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-12 text-center text-red-500">
+        {error}
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard 👑</h1>
@@ -98,6 +151,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Stats and Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
           <TicketStats tickets={tickets} />
@@ -126,7 +180,7 @@ const AdminDashboard = () => {
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
               >
                 <div>
-                  <h4 className="font-medium">{ticket.subject || ticket.title}</h4>
+                  <h4 className="font-medium">{ticket.subject}</h4>
                   <p className="text-sm text-gray-500">
                     {ticket.company?.name} • {ticket.status}
                   </p>
@@ -140,6 +194,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
+      {/* Tickets List Section */}
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-800">All Tickets 📋</h2>
@@ -152,7 +207,6 @@ const AdminDashboard = () => {
                 type="text"
                 placeholder="Search tickets..."
                 className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                // Search functionality optional - implement if needed
               />
             </div>
             <div className="relative">
@@ -174,17 +228,15 @@ const AdminDashboard = () => {
         </div>
         <TicketList
           tickets={filteredTickets}
-          employees={employees}
-          onAssignClick={(ticket) => {
-            setSelectedTicket(ticket);
-            setShowAssignModal(true);
-          }}
+          currentUser={currentUser}
+          onAssignClick={handleAssignClick}
         />
       </Card>
 
-      {showAssignModal && selectedTicket && (
+      {/* Modals */}
+     {showAssignModal && selectedTicketId && (
         <AssignTicketModal
-          ticket={selectedTicket}
+          ticket={tickets.find(t => t._id === selectedTicketId)}
           employees={employees}
           onClose={() => setShowAssignModal(false)}
           onAssign={handleAssign}

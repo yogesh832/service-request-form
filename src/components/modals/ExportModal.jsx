@@ -1,20 +1,74 @@
-import { FaFilePdf, FaFileCsv, FaTimes } from 'react-icons/fa';
+import { FaFilePdf, FaFileCsv, FaTimes, FaFileExcel, FaUsers, FaTicketAlt } from 'react-icons/fa';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux'; // If using Redux
 
-const ExportModal = ({ onClose, onExport }) => {
-  const [format, setFormat] = useState('csv');
+const ExportModal = ({ onClose }) => {
   const [dateRange, setDateRange] = useState({
     start: '',
     end: ''
   });
+  const [loading, setLoading] = useState(false);
+  
+  // Get token from Redux or localStorage
+  const { userToken } = useSelector(state => state.auth) || {};
+  const token = userToken || localStorage.getItem('token');
 
-  const handleExport = () => {
-    onExport(format);
-    onClose();
+  const handleExport = async (resource, format) => {
+    try {
+      setLoading(true);
+      
+      // Construct query parameters
+      const params = new URLSearchParams();
+      if (dateRange.start) params.append('startDate', dateRange.start);
+      if (dateRange.end) params.append('endDate', dateRange.end);
+      
+      // Create Axios instance with credentials
+      const api = axios.create({
+        baseURL:  'https://localhost:5000', // Use environment variable if set
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true
+      });
+      
+      const url = `/api/export/${resource}/${format}?${params.toString()}`;
+      
+      // Make API request
+      const response = await api.get(url, {
+        responseType: 'blob', // Important for file downloads
+      });
+      
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers['content-disposition'];
+      const filename = contentDisposition 
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+        : `${resource}_export.${format}`;
+      
+      // Create download link
+      const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = urlBlob;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      
+      toast.success(`Export completed successfully!`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      const errorMessage = error.response?.data?.message || 
+                           error.message || 
+                           'Export failed. Please try again.';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <Modal onClose={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
@@ -29,38 +83,7 @@ const ExportModal = ({ onClose, onExport }) => {
         </div>
         
         <div className="p-5 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Export Format
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setFormat('csv')}
-                className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-colors ${
-                  format === 'csv' 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <FaFileCsv className="text-blue-500 text-2xl mb-2" />
-                <span>CSV Format</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormat('pdf')}
-                className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-colors ${
-                  format === 'pdf' 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <FaFilePdf className="text-red-500 text-2xl mb-2" />
-                <span>PDF Format</span>
-              </button>
-            </div>
-          </div>
-          
+          {/* Date Range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -86,19 +109,74 @@ const ExportModal = ({ onClose, onExport }) => {
             </div>
           </div>
           
+          {/* User Data Export */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <FaUsers className="text-blue-500" />
+              <h4 className="text-lg font-medium text-gray-800">User Data</h4>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                onClick={() => handleExport('users', 'excel')}
+                variant="outline"
+                className="flex items-center gap-2 justify-center"
+                disabled={loading}
+              >
+                <FaFileExcel className="text-green-600" />
+                <span>Excel</span>
+              </Button>
+              <Button
+                type="button"
+                onClick={() => handleExport('users', 'pdf')}
+                variant="outline"
+                className="flex items-center gap-2 justify-center"
+                disabled={loading}
+              >
+                <FaFilePdf className="text-red-500" />
+                <span>PDF</span>
+              </Button>
+            </div>
+          </div>
+          
+          {/* Ticket Data Export */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <FaTicketAlt className="text-purple-500" />
+              <h4 className="text-lg font-medium text-gray-800">Ticket Data</h4>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                onClick={() => handleExport('tickets', 'excel')}
+                variant="outline"
+                className="flex items-center gap-2 justify-center"
+                disabled={loading}
+              >
+                <FaFileExcel className="text-green-600" />
+                <span>Excel</span>
+              </Button>
+              <Button
+                type="button"
+                onClick={() => handleExport('tickets', 'pdf')}
+                variant="outline"
+                className="flex items-center gap-2 justify-center"
+                disabled={loading}
+              >
+                <FaFilePdf className="text-red-500" />
+                <span>PDF</span>
+              </Button>
+            </div>
+          </div>
+          
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
               onClick={onClose}
               variant="secondary"
+              disabled={loading}
             >
               Cancel
-            </Button>
-            <Button
-              onClick={handleExport}
-              className="flex items-center gap-2"
-            >
-              Export Data
             </Button>
           </div>
         </div>
@@ -106,4 +184,5 @@ const ExportModal = ({ onClose, onExport }) => {
     </Modal>
   );
 };
+
 export default ExportModal;
