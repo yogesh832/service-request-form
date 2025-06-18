@@ -14,7 +14,7 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor'; // ✔️ All other third-party code in another
           }
-        }
+        }//hkjh
       }
     }
   }
