@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+
 import { FaCheck, FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import TicketItem from './TicketItem';
 
