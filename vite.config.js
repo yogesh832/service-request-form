@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: './', // 👈 ensures assets use relative paths in production
+  base: '/', // 👈 ensures assets use relative paths in production
   plugins: [react()],
   build: {
     chunkSizeWarningLimit: 1000,
