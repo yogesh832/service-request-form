@@ -8,7 +8,7 @@ import {
   FaQuestionCircle,
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import '../../../public/images/WhatsApp Image 2025-06-18 at 10.23.20_4395d285.jpg'
+import logo from '../../assets/logo.jpg';
 const Sidebar = ({ isOpen, toggle }) => {
   const [user, setUser] = useState(null);
 
@@ -103,7 +103,7 @@ const Sidebar = ({ isOpen, toggle }) => {
           <div className="bg-white p-2 rounded-lg">
             {/* <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div> */}
 <img
-  src="/images/WhatsApp Image 2025-06-18 at 10.23.20_4395d285.jpg"
+  src={logo}
   alt="Profile"
   className="w-8 h-8 rounded-lg object-contain"
 />
