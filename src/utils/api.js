@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://service-request-form-backend-kcy2.onrender.com/api',
+  baseURL: 'https://service-request-form-backend-kcy2.onrender.com/api/auth/login',
 });
 
 api.interceptors.request.use(config => {

@@ -3,6 +3,7 @@ import { FaTimes, FaPaperclip, FaTrash } from 'react-icons/fa';
 import api from '../../utils/api';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
+import { toast } from 'react-toastify';
 
 const TicketForm = ({ onClose, onTicketCreated }) => {
   const [formData, setFormData] = useState({
@@ -75,9 +76,11 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
         onTicketCreated(response.data.data.ticket);
         onClose();
       }, 3000);
+      toast.success('Ticket created successfully!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create ticket');
       console.error('Error creating ticket:', err);
+      toast.error(err.response?.data?.message || 'Error creating ticket');
     } finally {
       setIsSubmitting(false);
     }

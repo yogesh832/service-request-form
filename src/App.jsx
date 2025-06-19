@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 // Removed direct imports for lazy-loaded components to avoid redeclaration errors
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import EmployeeSignupForm from './components/auth/EmployeeSignupForm';
+import EmployeeSignupForm from './components/auth/EmployeeSignupFrom';
 
 // Lazy imports
 const Home = lazy(() => import('./pages/Home'));
