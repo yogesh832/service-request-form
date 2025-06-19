@@ -91,6 +91,11 @@ function App() {
               <AdminAnalytics />
             </PrivateRoute>
           } />
+                    <Route path="employee-signup" element={
+            <PrivateRoute roles={['admin']}>
+              <EmployeeSignupForm />
+            </PrivateRoute>
+          } />
           <Route path="client-analytics" element={
             <PrivateRoute roles={['admin', 'client', 'employee']}>
               <ClientAnalytics />
