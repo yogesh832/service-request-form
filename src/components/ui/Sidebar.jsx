@@ -64,12 +64,12 @@ const Sidebar = ({ isOpen, toggle }) => {
       icon: <FaChartBar />,
       roles: ["admin", "employee"],
     },
-    {
-      path: `${basePath}/settings`,
-      label: "Settings",
-      icon: <FaCog />,
-      roles: ["admin", "employee"],
-    },
+    // {
+    //   path: `${basePath}/settings`,
+    //   label: "Settings",
+    //   icon: <FaCog />,
+    //   roles: ["admin", "employee"],
+    // },
     {
       path: `${basePath}/profile`,
       label: "Profile",

@@ -3,6 +3,7 @@ import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../../utils/api';
+import {toast} from 'react-toastify';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -65,6 +66,7 @@ const SignupForm = () => {
       navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
