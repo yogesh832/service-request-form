@@ -1,42 +1,46 @@
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './pages/Home';
-import LoginForm from './components/auth/LoginForm';
-import SignupForm from './components/auth/SignupForm';
-import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
-import ResetPasswordForm from './components/auth/ResetPasswordForm';
-import NotFound from './pages/NotFound';
-import DashboardLayout from './layouts/DashboardLayout';
-import Dashboard from './pages/Dashboard';
-import Tickets from './pages/Tickets';
-import Profile from './pages/Profile';
-import AnalyticsPage from './pages/Analytics';
-import SettingsPage from './pages/Settings';
-import Clients from './pages/Clients';
-import AdminAnalytics from './components/dashboard/AdminAnalytics';
-import ClientAnalytics from './components/dashboard/ClientAnalytics';
+// Removed direct imports for lazy-loaded components to avoid redeclaration errors
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EmployeeSignupForm from './components/auth/EmployeeSignupForm';
 
+// Lazy imports
+const Home = lazy(() => import('./pages/Home'));
+const LoginForm = lazy(() => import('./components/auth/LoginForm'));
+const SignupForm = lazy(() => import('./components/auth/SignupForm'));
+const ForgotPasswordForm = lazy(() => import('./components/auth/ForgotPasswordForm'));
+const ResetPasswordForm = lazy(() => import('./components/auth/ResetPasswordForm'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const DashboardLayout = lazy(() => import('./layouts/DashboardLayout'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Tickets = lazy(() => import('./pages/Tickets'));
+const Profile = lazy(() => import('./pages/Profile'));
+const AnalyticsPage = lazy(() => import('./pages/Analytics'));
+const SettingsPage = lazy(() => import('./pages/Settings'));
+const Clients = lazy(() => import('./pages/Clients'));
+const AdminAnalytics = lazy(() => import('./components/dashboard/AdminAnalytics'));
+const ClientAnalytics = lazy(() => import('./components/dashboard/ClientAnalytics'));
+
 // PrivateRoute component
 const PrivateRoute = ({ children, roles }) => {
   const user = JSON.parse(localStorage.getItem('user'));
-  
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  
+
   if (roles && !roles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
-  
+
   return children;
 };
 
 function App() {
   return (
     <Router>
-      {/* ToastContainer should be here once at top-level */}
+      {/* ToastContainer at top-level */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -49,13 +53,15 @@ function App() {
         pauseOnHover
       />
 
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<SignupForm />} />
-        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
+      {/* Suspense to show fallback while lazy components load */}
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignupForm />} />
+          <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordForm />} />
 
         {/* Dashboard Routes */}
         <Route 
@@ -113,9 +119,10 @@ function App() {
           } />
         </Route>
 
-        {/* Catch-all */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Catch-all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }
