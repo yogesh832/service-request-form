@@ -10,10 +10,13 @@ const Header = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    let parsedUser = null;
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+      parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
     }
+
+    console.log('User data loaded:', parsedUser);
   }, []);
 
   const handleLogout = () => {
@@ -65,16 +68,13 @@ const Header = ({ toggleSidebar }) => {
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
               <div className="relative group">
-                {user?.profilePhoto ? (
+                {user.profilePhoto ? (
                   <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
-                    <img 
-                      src={user.profilePhoto} 
-                      alt="Profile" 
+                    <img
+                      src={user.profilePhoto}
+                      alt="Profile"
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'path/to/default/avatar.png';
-                      }}
+               
                     />
                   </div>
                 ) : (
