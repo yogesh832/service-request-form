@@ -71,6 +71,12 @@ const Sidebar = ({ isOpen, toggle }) => {
     //   roles: ["admin", "employee"],
     // },
     {
+      path: `${basePath}/employee-signup`,
+      label: "Employee Signup",
+      icon: <FaUsers />,
+      roles: ["admin"],
+    },
+    {
       path: `${basePath}/profile`,
       label: "Profile",
       icon: <FaUsers />,

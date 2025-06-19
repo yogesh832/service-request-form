@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ const LoginForm = () => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
+toast.success("Login successful!");
       // Redirect based on role
       switch (user.role) {
         case "admin":
@@ -42,6 +43,7 @@ const LoginForm = () => {
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Something went wrong");
+      toast.error(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

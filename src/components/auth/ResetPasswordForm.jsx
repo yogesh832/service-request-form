@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FaLock, FaCheckCircle } from 'react-icons/fa';
 import api from '../../utils/api';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ResetPasswordForm = () => {
   const { token } = useParams();
@@ -19,11 +20,13 @@ const ResetPasswordForm = () => {
     // Basic validation
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
+      toast.error('Password must be at least 6 characters');
       return;
     }
     
@@ -43,11 +46,13 @@ const ResetPasswordForm = () => {
       setTimeout(() => {
         navigate('/login');
       }, 3000);
+      toast.success('Password reset successful! Redirecting to login...');
     } catch (err) {
       setError(
         err.response?.data?.message || 
         'Failed to reset password. The link may have expired.'
       );
+      toast.error(err.response?.data?.message || 'Error resetting password');
     } finally {
       setIsLoading(false);
     }

@@ -14,9 +14,9 @@ import SettingsPage from './pages/Settings';
 import Clients from './pages/Clients';
 import AdminAnalytics from './components/dashboard/AdminAnalytics';
 import ClientAnalytics from './components/dashboard/ClientAnalytics';
-
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EmployeeSignupForm from './components/auth/EmployeeSignupForm';
 
 // PrivateRoute component
 const PrivateRoute = ({ children, roles }) => {

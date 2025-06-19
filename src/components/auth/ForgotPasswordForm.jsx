@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaEnvelope } from 'react-icons/fa';
 import api from '../../utils/api';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('');
@@ -20,12 +21,14 @@ const ForgotPasswordForm = () => {
       
       // Show success message
       setIsSubmitted(true);
+      toast.success('Password reset email sent successfully!');
     } catch (err) {
       // Handle errors
       setError(
         err.response?.data?.message || 
         'Failed to send reset email. Please try again.'
       );
+      toast.error(err.response?.data?.message || 'Error sending reset email');
     } finally {
       setIsLoading(false);
     }
