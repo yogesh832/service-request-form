@@ -145,7 +145,9 @@ const Clients = () => {
     }));
   };
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return  <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>;
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
 
   return (

@@ -25,9 +25,9 @@ const Profile = () => {
        
 
         const response = await api.get(`/users/me`);
-        console.log('Fetched profile:', response.data.data.user);
+        // console.log('Fetched profile:', response.data.data.user);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
-            console.log('User data saved to localStorage:', response.data.data.user);
+            // console.log('User data saved to localStorage:', response.data.data.user);
         setProfileData(response.data.data.user);
         if (response.data.data.user.profilePhoto) {
           setFilePreview(response.data.data.user.profilePhoto);
@@ -97,7 +97,9 @@ const Profile = () => {
     }));
   };
 
-  if (loading) return <div>Loading profile...</div>;
+  if (loading) return  <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>;
 
   return (
     <div className="space-y-6 p-6">
@@ -115,7 +117,7 @@ const Profile = () => {
                   <img 
                     src={filePreview} 
                     alt="Profile" 
-                    className="w-24 h-24 rounded-full object-cover mb-4"
+                    className="w-24 h-24 rounded-full object-contain mb-4"
                   />
                 ) : (
                   <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">

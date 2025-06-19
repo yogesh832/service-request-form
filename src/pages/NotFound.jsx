@@ -42,7 +42,7 @@ const Profile = () => {
         });
         
         setIsLoading(false);
-      } catch (err) {
+      } catch {
         toast.error('Failed to load profile');
         setIsLoading(false);
       }
@@ -98,7 +98,7 @@ console.log(profileData)
       setPreviewImage(null);
       setIsEditing(false);
       toast.success('Profile updated successfully!');
-    } catch (err) {
+    } catch {
       toast.error('Update failed. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -172,9 +172,8 @@ console.log(profileData)
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+ <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        <p className="ml-4 text-gray-600">Loading profile...</p>
       </div>
     );
   }

@@ -19,7 +19,7 @@ const ClientDashboard = () => {
       try {
         setLoading(true);
         const response = await api.get('/tickets');
-        console.log('Fetched tickets:', response.data.data.tickets);
+        // console.log('Fetched tickets:', response.data.data.tickets);
         setTickets(response.data.data.tickets);
       } catch (err) {
         setError('Failed to load tickets. Please try again later.');

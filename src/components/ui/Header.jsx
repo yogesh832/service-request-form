@@ -16,7 +16,7 @@ const Header = ({ toggleSidebar }) => {
       setUser(parsedUser);
     }
 
-    console.log('User data loaded:', parsedUser);
+    // console.log('User data loaded:', parsedUser);
   }, []);
 
   const handleLogout = () => {
@@ -73,7 +73,7 @@ const Header = ({ toggleSidebar }) => {
                     <img
                       src={user.profilePhoto}
                       alt="Profile"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                
                     />
                   </div>
@@ -86,7 +86,7 @@ const Header = ({ toggleSidebar }) => {
                 )}
                 <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
                   <button 
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/dashboard/profile')}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     My Profile

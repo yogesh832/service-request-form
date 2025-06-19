@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
@@ -52,9 +53,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle ticket selection
-
-
   // Handle assign button click
   const handleAssignClick = (ticketId) => {
     setSelectedTicketId(ticketId);
@@ -87,10 +85,25 @@ const AdminDashboard = () => {
     }
   };
 
-  // Filter tickets based on status
+  // Filter tickets based on status and search term
   const filteredTickets = tickets.filter(ticket => {
-    if (filter === 'all') return true;
-    return ticket.status === filter;
+    // Apply status filter
+    if (filter !== 'all' && ticket.status !== filter) {
+      return false;
+    }
+    
+    // Apply search term filter if exists
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        (ticket.subject && ticket.subject.toLowerCase().includes(searchLower)) ||
+        (ticket.description && ticket.description.toLowerCase().includes(searchLower)) ||
+        (ticket.company && ticket.company.name && ticket.company.name.toLowerCase().includes(searchLower)) ||
+        (ticket._id && ticket._id.toLowerCase().includes(searchLower))
+      );
+    }
+    
+    return true;
   });
 
   // Prepare data for charts
@@ -207,6 +220,8 @@ const AdminDashboard = () => {
                 type="text"
                 placeholder="Search tickets..."
                 className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="relative">
@@ -234,7 +249,7 @@ const AdminDashboard = () => {
       </Card>
 
       {/* Modals */}
-     {showAssignModal && selectedTicketId && (
+      {showAssignModal && selectedTicketId && (
         <AssignTicketModal
           ticket={tickets.find(t => t._id === selectedTicketId)}
           employees={employees}
