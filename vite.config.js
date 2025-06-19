@@ -2,18 +2,18 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: './', // ✅ ensures relative paths for assets during Vercel build
+  base: './', // 👈 ensures assets use relative paths in production
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 1000, // ✅ avoids large chunk warnings
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/react')) {
-            return 'react-vendor'; // ✅ separate chunk for React
+            return 'react-vendor';
           }
           if (id.includes('node_modules')) {
-            return 'vendor'; // ✅ separate chunk for other libs
+            return 'vendor';
           }
         },
       },
