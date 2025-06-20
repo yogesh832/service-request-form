@@ -6,7 +6,12 @@ import {
   FaChartBar,
   FaCog,
   FaQuestionCircle,
+  FaUsersCog,
+  FaUserShield ,
+  FaUserTie 
 } from "react-icons/fa";
+import { RiAdminFill } from 'react-icons/ri';
+import { MdAdminPanelSettings } from 'react-icons/md';
 import { useEffect, useState } from "react";
 import logo from '../../assets/logo.jpg';
 const Sidebar = ({ isOpen, toggle }) => {
@@ -73,7 +78,19 @@ const Sidebar = ({ isOpen, toggle }) => {
     {
       path: `${basePath}/employee-signup`,
       label: "Employee Signup",
-      icon: <FaUsers />,
+      icon: <FaUserTie />,
+      roles: ["admin"],
+    },
+    {
+      path: `${basePath}/make-admin`,
+      label: "Make Admin",
+      icon: <MdAdminPanelSettings />,
+      roles: ["admin"],
+    },
+    {
+      path: `${basePath}/manage-user`,
+      label: "Manage Users",
+      icon: <FaUsersCog />,
       roles: ["admin"],
     },
     {

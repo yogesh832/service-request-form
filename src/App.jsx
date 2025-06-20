@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 // Removed direct imports for lazy-loaded components to avoid redeclaration errors
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import EmployeeSignupForm from './components/auth/EmployeeSignupFrom';
-
+import EmployeeSignup from './components/auth/EmployeeSignupFrom';
+import MakeAdmin from './pages/MakeAdminPanel';
+import ManageUsersPage from './pages/ManageUserPage';
 // Lazy imports
 const Home = lazy(() => import('./pages/Home'));
 const LoginForm = lazy(() => import('./components/auth/LoginForm'));
@@ -54,7 +55,9 @@ function App() {
       />
 
       {/* Suspense to show fallback while lazy components load */}
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -99,7 +102,17 @@ function App() {
           } />
                     <Route path="employee-signup" element={
             <PrivateRoute roles={['admin']}>
-              <EmployeeSignupForm />
+              <EmployeeSignup />
+            </PrivateRoute>
+          } />
+          <Route path="make-admin" element={
+            <PrivateRoute roles={['admin']}>
+              <MakeAdmin />
+            </PrivateRoute>
+          } />
+                    <Route path="manage-user" element={
+            <PrivateRoute roles={['admin']}>
+              <ManageUsersPage />
             </PrivateRoute>
           } />
           <Route path="client-analytics" element={
