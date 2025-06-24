@@ -73,12 +73,19 @@ const ClientAnalytics = () => {
     avgResolution
   };
 
-  // UPDATED: Added color property to priority data
+  // Priority data with colors
   const priorityData = [
-    { name: 'High', value: tickets.filter(t => t.priority === 'high').length, color: '#EF4444' },
-    { name: 'Medium', value: tickets.filter(t => t.priority === 'medium').length, color: '#F59E0B' },
-    { name: 'Low', value: tickets.filter(t => t.priority === 'low').length, color: '#10B981' }
+    { name: 'High', value: tickets.filter(t => t.priority === 'high').length },
+    { name: 'Medium', value: tickets.filter(t => t.priority === 'medium').length },
+    { name: 'Low', value: tickets.filter(t => t.priority === 'low').length }
   ];
+
+  // Color mapping for priorities
+  const priorityColors = {
+    'High': '#EF4444',    // Red
+    'Medium': '#F59E0B',  // Yellow
+    'Low': '#10B981'      // Green
+  };
 
   const recentResolved = resolvedTickets.slice(0, 5);
 
@@ -147,13 +154,13 @@ const ClientAnalytics = () => {
           </div>
         </Card>
 
-        {/* UPDATED: Added colors to priority distribution chart */}
+        {/* Updated Priority Distribution Chart */}
         <Card className="p-5">
           <h2 className="text-lg font-semibold mb-4">Ticket Priority Distribution</h2>
           <div className="h-64">
             <BarChart 
-              data={priorityData}
-              colors={priorityData.map(item => item.color)}
+              data={priorityData} 
+              colors={priorityData.map(item => priorityColors[item.name])} 
             />
           </div>
         </Card>
