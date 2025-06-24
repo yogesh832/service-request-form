@@ -6,6 +6,7 @@ import api from '../../utils/api';
 
 const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
   const [status, setStatus] = useState(ticket.status);
+  console.log(ticket)
   const [isUpdating, setIsUpdating] = useState(false);
   const navigate = useNavigate();
 
