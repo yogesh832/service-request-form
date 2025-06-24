@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [showNotifications, setShowNotifications] = useState(false);
+  // const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -35,7 +35,7 @@ const Header = ({ toggleSidebar }) => {
           >
             <FaBars size={20} />
           </button>
-          <div className="relative hidden md:block">
+          {/* <div className="relative hidden md:block">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>
@@ -44,11 +44,11 @@ const Header = ({ toggleSidebar }) => {
               placeholder="Search..."
               className="pl-10 py-2 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition w-64"
             />
-          </div>
+          </div> */}
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="relative">
+          {/* <div className="relative">
             <button 
               onClick={() => setShowNotifications(!showNotifications)}
               className="p-2 rounded-full hover:bg-gray-100 relative"
@@ -59,7 +59,7 @@ const Header = ({ toggleSidebar }) => {
             {showNotifications && (
               <Notification onClose={() => setShowNotifications(false)} />
             )}
-          </div>
+          </div> */}
           
           {user && (
             <div className="flex items-center gap-2">

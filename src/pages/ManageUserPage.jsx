@@ -180,7 +180,75 @@ const UserManagementPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">User Statistics</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                <span className="text-gray-700">Admins</span>
+              </div>
+              <span className="font-bold text-purple-600">
+                {users.filter(u => u.role === 'admin').length}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                <span className="text-gray-700">Employees</span>
+              </div>
+              <span className="font-bold text-blue-600">
+                {users.filter(u => u.role === 'employee').length}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-gray-700">Clients</span>
+              </div>
+              <span className="font-bold text-green-600">
+                {users.filter(u => u.role === 'client').length}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+          <div className="space-y-3">
+            <button 
+              className="w-full py-2 px-4 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-left"
+              onClick={() => {
+                setSearchTerm('');
+                setRoleFilter('all');
+              }}
+            >
+              Clear all filters
+            </button>
+            <button 
+              className="w-full py-2 px-4 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-left"
+              onClick={() => {
+                setRoleFilter('admin');
+                toast.info('Showing admin users');
+              }}
+            >
+              View all admins
+            </button>
+            <button 
+              className="w-full py-2 px-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-left"
+              onClick={() => {
+                setRoleFilter('employee');
+                toast.info('Showing employee users');
+              }}
+            >
+              View all employees
+            </button>
+          </div>
+        </div>
+      </div>
       
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -368,75 +436,7 @@ const UserManagementPage = () => {
         )}
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">User Statistics</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-                <span className="text-gray-700">Admins</span>
-              </div>
-              <span className="font-bold text-purple-600">
-                {users.filter(u => u.role === 'admin').length}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                <span className="text-gray-700">Employees</span>
-              </div>
-              <span className="font-bold text-blue-600">
-                {users.filter(u => u.role === 'employee').length}
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-gray-700">Clients</span>
-              </div>
-              <span className="font-bold text-green-600">
-                {users.filter(u => u.role === 'client').length}
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="space-y-3">
-            <button 
-              className="w-full py-2 px-4 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-left"
-              onClick={() => {
-                setSearchTerm('');
-                setRoleFilter('all');
-              }}
-            >
-              Clear all filters
-            </button>
-            <button 
-              className="w-full py-2 px-4 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-left"
-              onClick={() => {
-                setRoleFilter('admin');
-                toast.info('Showing admin users');
-              }}
-            >
-              View all admins
-            </button>
-            <button 
-              className="w-full py-2 px-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-left"
-              onClick={() => {
-                setRoleFilter('employee');
-                toast.info('Showing employee users');
-              }}
-            >
-              View all employees
-            </button>
-          </div>
-        </div>
-      </div>
+  
     </div>
   );
 };

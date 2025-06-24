@@ -1,55 +1,66 @@
-import { FaFilePdf, FaFileCsv, FaTimes, FaFileExcel, FaUsers, FaTicketAlt } from 'react-icons/fa';
+// components/ExportModal.jsx
+import { useState } from 'react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
-import { useState } from 'react';
-import axios from 'axios';
+import { FaFilePdf, FaFileExcel, FaTimes, FaFileAlt } from 'react-icons/fa';
+import api from '../../utils/api'; // Your pre-configured axios instance
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux'; // If using Redux
 
 const ExportModal = ({ onClose }) => {
-  const [dateRange, setDateRange] = useState({
-    start: '',
-    end: ''
-  });
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [loading, setLoading] = useState(false);
-  
-  // Get token from Redux or localStorage
-  const { userToken } = useSelector(state => state.auth) || {};
-  const token = userToken || localStorage.getItem('token');
+  const [previewData, setPreviewData] = useState(null);
+  const [previewResource, setPreviewResource] = useState(null);
+
+  // Fetch preview data in JSON (no file download)
+  // const fetchPreview = async (resource) => {
+  //   if (!dateRange.start || !dateRange.end) {
+  //     toast.error('Please select both start and end dates for preview');
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+  //     setPreviewResource(resource);
+
+  //     const params = new URLSearchParams({
+  //       startDate: dateRange.start,
+  //       endDate: dateRange.end,
+  //       preview: 'true',
+  //     }).toString();
+
+  //     const response = await api.get(`/export/${resource}/json?${params}`);
+  //     setPreviewData(response.data.data || []);
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.message || error.message || 'Failed to fetch preview');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleExport = async (resource, format) => {
+    if (!dateRange.start || !dateRange.end) {
+      toast.error('Please select both start and end dates before exporting');
+      return;
+    }
+
     try {
       setLoading(true);
-      
-      // Construct query parameters
-      const params = new URLSearchParams();
-      if (dateRange.start) params.append('startDate', dateRange.start);
-      if (dateRange.end) params.append('endDate', dateRange.end);
-      
-      // Create Axios instance with credentials
-      const api = axios.create({
-        baseURL:  'https://localhost:5000', // Use environment variable if set
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        withCredentials: true
+
+      const params = new URLSearchParams({
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+      }).toString();
+
+      const response = await api.get(`/export/${resource}/${format}?${params}`, {
+        responseType: 'blob',
       });
-      
-      const url = `/api/export/${resource}/${format}?${params.toString()}`;
-      
-      // Make API request
-      const response = await api.get(url, {
-        responseType: 'blob', // Important for file downloads
-      });
-      
-      // Extract filename from Content-Disposition header
+
       const contentDisposition = response.headers['content-disposition'];
-      const filename = contentDisposition 
+      const filename = contentDisposition
         ? contentDisposition.split('filename=')[1].replace(/"/g, '')
         : `${resource}_export.${format}`;
-      
-      // Create download link
+
       const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = urlBlob;
@@ -57,129 +68,118 @@ const ExportModal = ({ onClose }) => {
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
-      
-      toast.success(`Export completed successfully!`);
+
+      toast.success('Export successful!');
     } catch (error) {
-      console.error('Export failed:', error);
-      const errorMessage = error.response?.data?.message || 
-                           error.message || 
-                           'Export failed. Please try again.';
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.message || error.message || 'Export failed');
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <Modal onClose={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-        <div className="p-5 border-b border-gray-200 flex justify-between items-center">
-          <h3 className="text-xl font-semibold text-gray-800">Export Data</h3>
-          <button 
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
-          >
-            <FaTimes />
+      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Export Data</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <FaTimes size={20} />
           </button>
         </div>
-        
-        <div className="p-5 space-y-6">
-          {/* Date Range */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Start Date
-              </label>
-              <input
-                type="date"
-                value={dateRange.start}
-                onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
-                className="w-full py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                End Date
-              </label>
-              <input
-                type="date"
-                value={dateRange.end}
-                onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
-                className="w-full py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              />
-            </div>
-          </div>
-          
-          {/* User Data Export */}
+
+        {/* Date Range */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <FaUsers className="text-blue-500" />
-              <h4 className="text-lg font-medium text-gray-800">User Data</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                onClick={() => handleExport('users', 'excel')}
-                variant="outline"
-                className="flex items-center gap-2 justify-center"
-                disabled={loading}
-              >
-                <FaFileExcel className="text-green-600" />
-                <span>Excel</span>
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleExport('users', 'pdf')}
-                variant="outline"
-                className="flex items-center gap-2 justify-center"
-                disabled={loading}
-              >
-                <FaFilePdf className="text-red-500" />
-                <span>PDF</span>
-              </Button>
-            </div>
+            <label className="block mb-1 font-medium">Start Date</label>
+            <input
+              type="date"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={dateRange.start}
+              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+            />
           </div>
-          
-          {/* Ticket Data Export */}
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <FaTicketAlt className="text-purple-500" />
-              <h4 className="text-lg font-medium text-gray-800">Ticket Data</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                onClick={() => handleExport('tickets', 'excel')}
-                variant="outline"
-                className="flex items-center gap-2 justify-center"
-                disabled={loading}
-              >
-                <FaFileExcel className="text-green-600" />
-                <span>Excel</span>
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleExport('tickets', 'pdf')}
-                variant="outline"
-                className="flex items-center gap-2 justify-center"
-                disabled={loading}
-              >
-                <FaFilePdf className="text-red-500" />
-                <span>PDF</span>
-              </Button>
-            </div>
-          </div>
-          
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="secondary"
-              disabled={loading}
-            >
-              Cancel
-            </Button>
+            <label className="block mb-1 font-medium">End Date</label>
+            <input
+              type="date"
+              className="w-full border border-gray-300 rounded px-3 py-2"
+              value={dateRange.end}
+              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+            />
           </div>
         </div>
+
+        {/* Export Buttons */}
+        <div className="space-y-6">
+          {['users', 'tickets', 'companies'].map((resource) => (
+            <div key={resource}>
+              <h3 className="text-lg font-semibold capitalize mb-2">{resource} Data</h3>
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => handleExport(resource, 'excel')}
+                  disabled={loading}
+                >
+                  <FaFileExcel className="text-green-600 mr-2" /> Excel
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleExport(resource, 'pdf')}
+                  disabled={loading}
+                >
+                  <FaFilePdf className="text-red-600 mr-2" /> PDF
+                </Button>
+                {/* <Button
+                  variant="outline"
+                  onClick={() => fetchPreview(resource)}
+                  disabled={loading}
+                >
+                  <FaFileAlt className="mr-2" /> Preview
+                </Button> */}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Preview Table */}
+        {previewData && previewResource && (
+          <div className="mt-8 overflow-auto max-h-96 border border-gray-200 rounded p-4 bg-gray-50">
+            <h4 className="text-lg font-semibold mb-4">
+              Preview: {previewResource.charAt(0).toUpperCase() + previewResource.slice(1)} Data
+            </h4>
+            <table className="min-w-full border-collapse border border-gray-300">
+              <thead className="bg-gray-200">
+                <tr>
+                  {Object.keys(previewData[0]).map((key) => (
+                    <th
+                      key={key}
+                      className="border border-gray-300 px-3 py-1 text-left text-sm font-semibold"
+                    >
+                      {key}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {previewData.map((row, i) => (
+                  <tr
+                    key={i}
+                    className={i % 2 === 0 ? 'bg-white' : 'bg-gray-100'}
+                  >
+                    {Object.values(row).map((val, j) => (
+                      <td
+                        key={j}
+                        className="border border-gray-300 px-3 py-1 text-sm"
+                      >
+                        {val ?? '-'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </Modal>
   );

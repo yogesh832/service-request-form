@@ -190,7 +190,7 @@ const AdminAnalytics = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Admin Analytics 📈</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Admin Analytics</h1>
         <p className="text-gray-600">Global support performance metrics</p>
       </div>
       
@@ -319,7 +319,7 @@ const AdminAnalytics = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full py-2 px-4 pr-8 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
               >
-                <option value="all">All Statuses</option>
+                <option value="all">All Status</option>
                 <option value="active">Active</option>
                 <option value="on leave">On Leave</option>
                 <option value="inactive">Inactive</option>

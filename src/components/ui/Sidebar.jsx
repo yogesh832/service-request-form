@@ -110,7 +110,7 @@ const Sidebar = ({ isOpen, toggle }) => {
     <aside
       className={`
         fixed left-0 z-30 
-        bg-gradient-to-b from-blue-900 to-blue-800 text-white 
+        bg-gradient-to-b from-[#18D16E] via-green-700 to-green-800 text-white 
         w-64 
         transform transition-transform duration-300 ease-in-out
 
@@ -121,7 +121,7 @@ const Sidebar = ({ isOpen, toggle }) => {
         h-[calc(100vh-64px)] md:h-full
       `}
     >
-      <div className="flex items-center justify-between p-5 border-b border-blue-700">
+      <div className="flex items-center justify-between p-5 border-b border-green-700">
         <div className="flex items-center gap-2">
           <div className="bg-white p-2 rounded-lg">
             {/* <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div> */}
@@ -146,8 +146,8 @@ const Sidebar = ({ isOpen, toggle }) => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-blue-700 shadow-inner"
-                      : "hover:bg-blue-700/50"
+                      ? "bg-green-700 shadow-inner"
+                      : "hover:bg-green-700/50"
                   }`
                 }
                 onClick={toggle}
@@ -159,10 +159,10 @@ const Sidebar = ({ isOpen, toggle }) => {
           ))}
         </ul>
 
-        <div className="mt-8 pt-6 border-t border-blue-700">
-          <div className="px-4 py-3 bg-blue-700/30 rounded-lg">
+        <div className="mt-8 pt-6 border-t border-green-900">
+          <div className="px-4 py-3 bg-green-800 rounded-lg">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center">
+              <div className="bg-gradient-to-b from-[#18D16E] via-green-500 to-green-600 w-10 h-10 rounded-full flex items-center justify-center">
                 <span className="font-bold">
                   {user.name.charAt(0).toUpperCase()}
                 </span>

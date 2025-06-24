@@ -1,13 +1,30 @@
-import { useState ,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FaPlus, FaSearch, FaFilter } from 'react-icons/fa';
 import TicketForm from '../components/tickets/TicketForm';
 import TicketList from '../components/tickets/TicketList';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-
 import api from '../utils/api';
 import AssignTicketModal from '../components/modals/AssignTicketModal';
 import { toast } from 'react-toastify';
+
+// Helper function to format dates for search
+const formatDateForSearch = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  
+  // ISO format (YYYY-MM-DD)
+  const isoDate = date.toISOString().split('T')[0];
+  
+  // US format (MM/DD/YYYY)
+  const usDate = date.toLocaleDateString('en-US');
+  
+  // Numeric format (MMDDYYYY)
+  const numericDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}${date.getFullYear()}`;
+  
+  return `${isoDate} ${usDate} ${numericDate}`;
+};
+
 const Tickets = () => {
   const [showTicketForm, setShowTicketForm] = useState(false);
   const [filter, setFilter] = useState('all');
@@ -19,8 +36,7 @@ const Tickets = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [employees, setEmployees] = useState([]);
-
-
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,10 +83,10 @@ const Tickets = () => {
       setError(error.response?.data?.message || 'Assignment failed');
     }
   };
-   // Fetch employees for a specific ticket
+
+  // Fetch employees for a specific ticket
   const fetchEmployeesForTicket = async (ticketId) => {
     try {
-      // console.log('Fetching employees for ticket:', ticketId);
       const res = await api.get(`/tickets/${ticketId}/employees`);
       setEmployees(res.data.data.employees);
     } catch (error) {
@@ -81,26 +97,49 @@ const Tickets = () => {
   // Handle assign button click
   const handleAssignClick = (ticketId) => {
     setSelectedTicketId(ticketId);
-    // console.log('Assigning ticket:', ticketId);
-
     fetchEmployeesForTicket(ticketId);
     setShowAssignModal(true);
   };
 
-
-
-  // Filter tickets based on status
+  // Enhanced ticket filtering with search functionality
   const filteredTickets = tickets.filter(ticket => {
-    if (filter === 'all') return true;
-    return ticket.status === filter;
-  });
+    // Status filter
+    if (filter !== 'all' && ticket.status !== filter) {
+      return false;
+    }
 
-  
+    // Search term filter
+    if (searchTerm) {
+      const lowerSearch = searchTerm.toLowerCase();
+      
+      // Check ticket number
+      if (ticket.ticketNumber?.toLowerCase().includes(lowerSearch)) {
+        return true;
+      }
+      
+      // Check description
+      if (ticket.description?.toLowerCase().includes(lowerSearch)) {
+        return true;
+      }
+      
+      // Check dates
+      const formattedDates = [
+        formatDateForSearch(ticket.createdAt),
+        formatDateForSearch(ticket.updatedAt),
+        formatDateForSearch(ticket.dueDate)
+      ].join(' ');
+      
+      return formattedDates.toLowerCase().includes(lowerSearch);
+    }
+
+    // If no search term, include the ticket
+    return true;
+  });
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
       </div>
     );
   }
@@ -123,14 +162,14 @@ const Tickets = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Tickets 🎫</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Tickets</h1>
           <p className="text-gray-600">Manage all your support requests in one place</p>
         </div>
         
         {user?.role === 'client' && (
           <Button 
             onClick={() => setShowTicketForm(true)}
-            className="flex items-center gap-2"
+         className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
           >
             <FaPlus /> New Ticket
           </Button>
@@ -141,9 +180,9 @@ const Tickets = () => {
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold text-gray-800">All Tickets</h2>
-      <span className="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full text-sm font-medium">
-  {filteredTickets.length}
-</span>
+            <span className="bg-gray-100 text-gray-800 px-2.5 py-0.5 rounded-full text-sm font-medium">
+              {filteredTickets.length}
+            </span>
           </div>
           <div className="flex gap-3">
             <div className="relative">
@@ -152,8 +191,10 @@ const Tickets = () => {
               </div>
               <input 
                 type="text" 
-                placeholder="Search tickets..."
+                placeholder="Search by #, description, or date..."
                 className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="relative">
@@ -173,7 +214,7 @@ const Tickets = () => {
             </div>
           </div>
         </div>
-     <TicketList
+        <TicketList
           tickets={filteredTickets}
           currentUser={currentUser}
           onAssignClick={handleAssignClick}
@@ -184,7 +225,7 @@ const Tickets = () => {
         <TicketForm onClose={() => setShowTicketForm(false)} />
       )}
 
-     {showAssignModal && selectedTicketId && (
+      {showAssignModal && selectedTicketId && (
         <AssignTicketModal
           ticket={tickets.find(t => t._id === selectedTicketId)}
           employees={employees}
@@ -192,8 +233,8 @@ const Tickets = () => {
           onAssign={handleAssign}
         />
       )}
-      
     </div>
   );
 };
+
 export default Tickets;

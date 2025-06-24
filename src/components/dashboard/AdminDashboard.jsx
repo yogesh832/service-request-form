@@ -151,7 +151,7 @@ const AdminDashboard = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard 👑</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
           <p className="text-gray-600">Manage all support tickets and assignments</p>
         </div>
         <div className="flex gap-3">

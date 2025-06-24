@@ -1,7 +1,7 @@
+// src/components/client/ClientAnalytics.jsx
 import { FaTicketAlt, FaClock, FaCheckCircle, FaChartLine } from 'react-icons/fa';
 import Card from '../ui/Card';
 import BarChart from '../ui/Charts/BarChart';
-
 import { formatDate } from '../../utils/helpers';
 import { useEffect, useState } from 'react';
 import api from '../../utils/api';
@@ -73,10 +73,11 @@ const ClientAnalytics = () => {
     avgResolution
   };
 
+  // UPDATED: Added color property to priority data
   const priorityData = [
-    { name: 'High', value: tickets.filter(t => t.priority === 'high').length },
-    { name: 'Medium', value: tickets.filter(t => t.priority === 'medium').length },
-    { name: 'Low', value: tickets.filter(t => t.priority === 'low').length }
+    { name: 'High', value: tickets.filter(t => t.priority === 'high').length, color: '#EF4444' },
+    { name: 'Medium', value: tickets.filter(t => t.priority === 'medium').length, color: '#F59E0B' },
+    { name: 'Low', value: tickets.filter(t => t.priority === 'low').length, color: '#10B981' }
   ];
 
   const recentResolved = resolvedTickets.slice(0, 5);
@@ -84,7 +85,7 @@ const ClientAnalytics = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Analytics 📊</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Analytics</h1>
         <p className="text-gray-600">Track and analyze your support ticket performance</p>
       </div>
 
@@ -146,10 +147,14 @@ const ClientAnalytics = () => {
           </div>
         </Card>
 
+        {/* UPDATED: Added colors to priority distribution chart */}
         <Card className="p-5">
           <h2 className="text-lg font-semibold mb-4">Ticket Priority Distribution</h2>
           <div className="h-64">
-            <BarChart data={priorityData} />
+            <BarChart 
+              data={priorityData}
+              colors={priorityData.map(item => item.color)}
+            />
           </div>
         </Card>
       </div>

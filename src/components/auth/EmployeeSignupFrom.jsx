@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../../utils/api';
 import {toast} from 'react-toastify';
@@ -17,10 +16,10 @@ const EmployeeSignupForm = () => {
   });
 
 //   const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
+ 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+
 
 //   useEffect(() => {
 //     const fetchCompanies = async () => {
@@ -48,14 +47,14 @@ const EmployeeSignupForm = () => {
     }));
   };
 
-  const handleCompanyChange = (selectedOption) => {
-    setSelectedCompany(selectedOption);
-    console.log('Selected company:', selectedOption);
-    setFormData((prev) => ({
-      ...prev,
-      company: selectedOption ? selectedOption.value : '',
-    }));
-  };
+  // const handleCompanyChange = (selectedOption) => {
+  //   setSelectedCompany(selectedOption);
+  //   console.log('Selected company:', selectedOption);
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     company: selectedOption ? selectedOption.value : '',
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,7 +63,7 @@ const EmployeeSignupForm = () => {
 
     try {
       await api.post('/auth/register', formData);
-      navigate('/login', { state: { signupSuccess: true } });
+      // navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -80,7 +79,7 @@ const EmployeeSignupForm = () => {
           <div className="mx-auto bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <FaUser className="text-white text-2xl" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">Create Account 🚀</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
           <p className="text-gray-500 mt-2">Join us today!</p>
         </div>
 

@@ -63,7 +63,7 @@ const Profile = () => {
       formData.append('name', profileData.name);
       formData.append('email', profileData.email);
       if (profileData.phone) formData.append('phone', profileData.phone);
-      if (profileData.about) formData.append('about', profileData.about);
+
       
       // Add file if selected
       if (selectedFile) {
@@ -98,13 +98,13 @@ const Profile = () => {
   };
 
   if (loading) return  <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
       </div>;
 
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Your Profile 👤</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Your Profile</h1>
         <p className="text-gray-600">Manage your account settings and preferences</p>
       </div>
       
@@ -114,13 +114,15 @@ const Profile = () => {
             <div className="flex flex-col items-center">
               <div className="relative">
                 {filePreview ? (
-                  <img 
-                    src={filePreview} 
-                    alt="Profile" 
-                    className="w-24 h-24 rounded-full object-contain mb-4"
-                  />
+               <img 
+  src={filePreview} 
+  alt="Profile" 
+  style={{ maxWidth: '100%', height: 'auto' }} 
+  className="mb-4"
+/>
+
                 ) : (
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
+                  <div className="bg-gradient-to-r from-green-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">
                     {profileData?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                   
@@ -142,7 +144,7 @@ const Profile = () => {
               <p className="text-sm text-gray-500 mt-1">{profileData?.company?.name || profileData?.company}</p>
             </div>
             
-            <div className="mt-8 space-y-4">
+            {/* <div className="mt-8 space-y-4">
               <button className="w-full py-2.5 px-4 text-left rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-gray-800">
                 Account Settings
               </button>
@@ -155,7 +157,7 @@ const Profile = () => {
               <button className="w-full py-2.5 px-4 text-left rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors text-red-600">
                 Delete Account
               </button>
-            </div>
+            </div> */}
           </Card>
         </div>
         
@@ -272,7 +274,7 @@ const Profile = () => {
                 </div>
               </div>
               
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   About
                 </label>
@@ -285,11 +287,11 @@ const Profile = () => {
                   className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition disabled:bg-gray-100"
                   placeholder="Tell us a little about yourself..."
                 ></textarea>
-              </div>
+              </div> */}
             </form>
           </Card>
           
-          <Card className="p-5 mt-6">
+          {/* <Card className="p-5 mt-6">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Security</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
@@ -308,7 +310,7 @@ const Profile = () => {
                 <Button variant="secondary">Enable 2FA</Button>
               </div>
             </div>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>
