@@ -13,7 +13,7 @@ import {
 import { RiAdminFill } from 'react-icons/ri';
 import { MdAdminPanelSettings } from 'react-icons/md';
 import { useEffect, useState } from "react";
-import logo from '../../assets/logo.jpg';
+import logo from '../../assets/logo.png';
 const Sidebar = ({ isOpen, toggle }) => {
   const [user, setUser] = useState(null);
 
@@ -110,7 +110,7 @@ const Sidebar = ({ isOpen, toggle }) => {
     <aside
       className={`
         fixed left-0 z-30 
-        bg-gray-700 via-green-800 to-green-800 text-white 
+        bg-green-800 via-green-800 to-green-800 text-white 
         w-64 
         transform transition-transform duration-300 ease-in-out
 
