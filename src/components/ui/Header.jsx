@@ -6,14 +6,17 @@ import { useNavigate } from 'react-router-dom';
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [showNotifications, setShowNotifications] = useState(false);
+  // const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    let parsedUser = null;
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
+      parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
     }
+
+    // console.log('User data loaded:', parsedUser);
   }, []);
 
   const handleLogout = () => {
@@ -32,7 +35,7 @@ const Header = ({ toggleSidebar }) => {
           >
             <FaBars size={20} />
           </button>
-          <div className="relative hidden md:block">
+          {/* <div className="relative hidden md:block">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>
@@ -41,11 +44,11 @@ const Header = ({ toggleSidebar }) => {
               placeholder="Search..."
               className="pl-10 py-2 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition w-64"
             />
-          </div>
+          </div> */}
         </div>
         
         <div className="flex items-center gap-4">
-          <div className="relative">
+          {/* <div className="relative">
             <button 
               onClick={() => setShowNotifications(!showNotifications)}
               className="p-2 rounded-full hover:bg-gray-100 relative"
@@ -56,7 +59,7 @@ const Header = ({ toggleSidebar }) => {
             {showNotifications && (
               <Notification onClose={() => setShowNotifications(false)} />
             )}
-          </div>
+          </div> */}
           
           {user && (
             <div className="flex items-center gap-2">
@@ -65,16 +68,13 @@ const Header = ({ toggleSidebar }) => {
                 <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
               </div>
               <div className="relative group">
-                {user?.profilePhoto ? (
+                {user.profilePhoto ? (
                   <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200">
-                    <img 
-                      src={user.profilePhoto} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'path/to/default/avatar.png';
-                      }}
+                    <img
+                      src={user.profilePhoto}
+                      alt="Profile"
+                      className="w-full h-full object-contain"
+               
                     />
                   </div>
                 ) : (
@@ -86,7 +86,7 @@ const Header = ({ toggleSidebar }) => {
                 )}
                 <div className="absolute right-0 top-6 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 hidden group-hover:block z-50">
                   <button 
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/dashboard/profile')}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     My Profile

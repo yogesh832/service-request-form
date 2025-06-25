@@ -145,14 +145,16 @@ const Clients = () => {
     }));
   };
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return  <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>;
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Client Companies 🏢</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Client Companies</h1>
           <p className="text-gray-600">Manage all your client organizations and their support tickets</p>
         </div>
         <Button 
@@ -260,7 +262,7 @@ const Clients = () => {
                 <tr key={company._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                      <div className="bg-gradient-to-r from-green-500 to-green-600 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold mr-3">
                         {company.name.charAt(0)}
                       </div>
                       <div>
@@ -340,7 +342,7 @@ const Clients = () => {
           
           {filteredCompanies.length === 0 && (
             <div className="py-12 text-center">
-              <div className="text-gray-400 text-5xl mb-4">🏢</div>
+              {/* <div className="text-gray-400 text-5xl mb-4">🏢</div> */}
               <h3 className="text-lg font-medium text-gray-600">No clients found</h3>
               <p className="text-gray-500 mt-1">
                 {searchTerm ? 'Try changing your search terms' : 'Create your first client'}
@@ -453,7 +455,7 @@ const Clients = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition"
+                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-medium hover:from-green-600 hover:to-green-700 transition"
                 >
                   {currentClient ? 'Update Client' : 'Create Client'}
                 </button>

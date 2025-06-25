@@ -1,8 +1,7 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const CustomBar = (props) => {
   const { fill, x, y, width, height } = props;
-  
   return (
     <g>
       <rect 
@@ -30,10 +29,24 @@ const ChartTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-const BarChartComponent = ({ data }) => {
+// Priority-based colors
+const getColorByPriority = (priority) => {
+  switch (priority) {
+    case 'High':
+      return '#ef4444'; // red
+    case 'Medium':
+      return '#facc15'; // yellow
+    case 'Low':
+      return '#22c55e'; // green
+    default:
+      return '#4f46e5'; // fallback blue
+  }
+};
+
+const BarChart = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+    <ResponsiveContainer width="100%" height={300}>
+      <RechartsBarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
         <XAxis 
           dataKey="name" 
@@ -49,13 +62,16 @@ const BarChartComponent = ({ data }) => {
         <Tooltip content={<ChartTooltip />} />
         <Bar 
           dataKey="value" 
-          fill="#4f46e5" 
-          shape={<CustomBar />} 
+          shape={<CustomBar />}
           radius={[6, 6, 0, 0]}
-        />
-      </BarChart>
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={getColorByPriority(entry.name)} />
+          ))}
+        </Bar>
+      </RechartsBarChart>
     </ResponsiveContainer>
   );
 };
 
-export default BarChartComponent;
+export default BarChart;

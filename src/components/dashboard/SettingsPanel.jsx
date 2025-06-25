@@ -13,7 +13,9 @@ const SettingsPanel = () => {
   const user = JSON.parse(localStorage.getItem('user')); 
   console.log(user); // Assuming user data is stored in localStorage
   if (!user) {
-    return null;
+    return  <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>;
   }
 
   const handleNotificationChange = (type) => {

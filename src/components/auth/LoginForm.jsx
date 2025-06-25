@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ const LoginForm = () => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
+toast.success("Login successful!");
       // Redirect based on role
       switch (user.role) {
         case "admin":
@@ -42,6 +43,7 @@ const LoginForm = () => {
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Something went wrong");
+      toast.error(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +56,7 @@ const LoginForm = () => {
           <div className="mx-auto bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <FaLock className="text-white text-2xl" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">Welcome Back! 👋</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Welcome to <span className="text-[#18D16E]">SALKA </span>TECH</h2>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
 

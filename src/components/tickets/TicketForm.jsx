@@ -1,13 +1,27 @@
-import { useState, useRef } from 'react';
-import { FaTimes, FaPaperclip, FaTrash } from 'react-icons/fa';
+import { useState, useRef ,useEffect } from 'react';
+import { FaTimes, FaPaperclip, FaTrash, FaChevronDown } from 'react-icons/fa';
 import api from '../../utils/api';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
+import { toast } from 'react-toastify';
+
+// Phone validation regex
+const PHONE_REGEX = /^\+\d{1,4}\d{7,14}$/;
+
+// Country code options with flags
+const COUNTRY_CODES = [
+
+  { code: '+91', flag: '🇮🇳' },
+ 
+  // Add more countries as needed
+];
 
 const TicketForm = ({ onClose, onTicketCreated }) => {
   const [formData, setFormData] = useState({
     subject: '',
     phone: '',
+    countryCode: '+91', // Default country code
+    phoneNumber: '',
     category: 'technical',
     priority: 'medium',
     description: '',
@@ -16,14 +30,56 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
   const [attachments, setAttachments] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const fileInputRef = useRef(null);
+  const countryDropdownRef = useRef(null);
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Validate phone number in real-time
+    if (name === 'phoneNumber') {
+      validatePhoneNumber(value);
+    }
   };
 
+  // Handle country code selection
+  const selectCountryCode = (code) => {
+    setFormData(prev => ({ ...prev, countryCode: code }));
+    setIsCountryDropdownOpen(false);
+    validatePhoneNumber(formData.phoneNumber);
+  };
+
+  // Phone number validation function
+  const validatePhoneNumber = (phoneNumber) => {
+    const fullPhone = `${formData.countryCode}${phoneNumber}`;
+    
+    if (phoneNumber && !PHONE_REGEX.test(fullPhone)) {
+      setPhoneError('Please enter a valid phone number (e.g., 9876543210)');
+    } else {
+      setPhoneError('');
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+        setIsCountryDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Handle file attachments
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const newAttachments = files.map(file => ({
@@ -36,6 +92,7 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
     setAttachments(prev => [...prev, ...newAttachments]);
   };
 
+  // Remove attachment
   const removeAttachment = (index) => {
     const newAttachments = [...attachments];
     URL.revokeObjectURL(newAttachments[index].preview);
@@ -43,17 +100,28 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
     setAttachments(newAttachments);
   };
 
+  // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
+    
+    // Combine country code and phone number
+    const fullPhone = `${formData.countryCode}${formData.phoneNumber}`;
+    
+    // Final validation before submission
+    if (formData.phoneNumber && !PHONE_REGEX.test(fullPhone)) {
+      setPhoneError('Please enter a valid phone number');
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const formDataToSend = new FormData();
       
       // Append regular form data
       formDataToSend.append('subject', formData.subject);
-      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('phone', fullPhone);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('priority', formData.priority);
       formDataToSend.append('description', formData.description);
@@ -75,9 +143,20 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
         onTicketCreated(response.data.data.ticket);
         onClose();
       }, 3000);
+      toast.success('Ticket created successfully!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create ticket');
+      const errorMessage = err.response?.data?.message || 'Failed to create ticket';
+      
+      // Handle backend validation errors
+      if (errorMessage.toLowerCase().includes('phone') || 
+          errorMessage.toLowerCase().includes('number')) {
+        setPhoneError(errorMessage);
+      } else {
+        setError(errorMessage);
+      }
+      
       console.error('Error creating ticket:', err);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -128,18 +207,58 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
               />
             </div>
             
-            <div>
+            <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Mobile Number
               </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                placeholder="Enter your mobile number"
-              />
+              <div className="flex gap-2">
+                <div className="relative flex-1" ref={countryDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                    className="w-full flex items-center justify-between py-2 px-3 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  >
+                    <span>{formData.countryCode}</span>
+                    <FaChevronDown className={`transition-transform ${isCountryDropdownOpen ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {isCountryDropdownOpen && (
+                    <div className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg">
+                      {COUNTRY_CODES.map((country) => (
+                        <div
+                          key={country.code}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                          onClick={() => selectCountryCode(country.code)}
+                        >
+                          <span className="text-xl">{country.flag}</span>
+                          <span>{country.name}</span>
+                          <span className="ml-auto text-gray-500">{country.code}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <input
+                  type="number"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  className={`flex-[3] py-2 px-3 rounded-lg bg-gray-50 border ${
+                    phoneError ? 'border-red-500' : 'border-gray-200'
+                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  placeholder="Enter your number"
+                />
+              </div>
+              {phoneError ? (
+                <p className="mt-1 text-sm text-red-600">
+                  {phoneError}
+                </p>
+              ) : (
+                <p className="mt-1 text-sm text-gray-500">
+                  Full number: {formData.countryCode}{formData.phoneNumber || '______'}
+                </p>
+              )}
             </div>
             
             <div>
@@ -260,8 +379,10 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition disabled:opacity-70 flex items-center"
+              disabled={isSubmitting || phoneError}
+              className={`px-5 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium hover:from-blue-600 hover:to-purple-700 transition disabled:opacity-70 flex items-center ${
+                phoneError ? 'cursor-not-allowed' : ''
+              }`}
             >
               {isSubmitting ? (
                 <>

@@ -1,43 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../../utils/api';
 import {toast} from 'react-toastify';
 
-const SignupForm = () => {
+
+const EmployeeSignupForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
     company: null,
-    role: 'client', // Default role
+    role: 'employee', // Default role
   });
 
-  const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
+//   const [companies, setCompanies] = useState([]);
+ 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const res = await api.get('/companies');
-        console.log('Fetched companies:', res.data.data.companies);
-        const companyOptions = res.data.data.companies.map((company) => ({
-          label: company.name,
-          value: company._id,
-        }));
-        setCompanies(companyOptions);
-      } catch (err) {
-        console.error('Failed to fetch companies:', err);
-      }
-    };
 
-    fetchCompanies();
-  }, []);
+//   useEffect(() => {
+//     const fetchCompanies = async () => {
+//       try {
+//         const res = await api.get('/companies');
+//         console.log('Fetched companies:', res.data.data.companies);
+//         const companyOptions = res.data.data.companies.map((company) => ({
+//           label: company.name,
+//           value: company._id,
+//         }));
+//         setCompanies(companyOptions);
+//       } catch (err) {
+//         console.error('Failed to fetch companies:', err);
+//       }
+//     };
+
+//     fetchCompanies();
+//   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,14 +47,14 @@ const SignupForm = () => {
     }));
   };
 
-  const handleCompanyChange = (selectedOption) => {
-    setSelectedCompany(selectedOption);
-    console.log('Selected company:', selectedOption);
-    setFormData((prev) => ({
-      ...prev,
-      company: selectedOption ? selectedOption.value : '',
-    }));
-  };
+  // const handleCompanyChange = (selectedOption) => {
+  //   setSelectedCompany(selectedOption);
+  //   console.log('Selected company:', selectedOption);
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     company: selectedOption ? selectedOption.value : '',
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,7 +63,7 @@ const SignupForm = () => {
 
     try {
       await api.post('/auth/register', formData);
-      navigate('/login', { state: { signupSuccess: true } });
+      // navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -152,18 +152,18 @@ const SignupForm = () => {
               />
             </div>
 
-            {/* <select
+            <select
               name="role"
               value={formData.role}
               onChange={handleChange}
               className="w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               required
             >
-              <option value="client">Client</option>
               <option value="employee">Employee</option>
-            </select> */}
+              <option value="admin">Admin</option>
+            </select>
 
-            <div>
+            {/* <div>
               <label className="block text-gray-700 mb-1">Select Company</label>
               <Select
                 value={selectedCompany}
@@ -172,7 +172,7 @@ const SignupForm = () => {
                 placeholder="Search and select a company"
                 isClearable={false}
               />
-            </div>
+            </div> */}
           </div>
 
           <button
@@ -214,17 +214,17 @@ const SignupForm = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{' '}
             <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Sign in
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </section>
   );
 };
 
-export default SignupForm;
+export default EmployeeSignupForm;

@@ -16,7 +16,7 @@
   "type": "module",
   "main": "eslint.config.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite ",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -32,6 +32,11 @@
     "axios": "^1.9.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.18.0",
+<<<<<<< HEAD
+=======
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
+>>>>>>> 5b10cf77e979cd9d8cba2ca06f13283747bf0341
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.5.2",
@@ -55,7 +60,7 @@
     "globals": "^16.0.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
-    "vite": "^5.4.19"
+    "vite": "^6.3.5"
   },
   "overrides": {
     "react": "18.2.0",
