@@ -110,7 +110,7 @@ const Sidebar = ({ isOpen, toggle }) => {
     <aside
       className={`
         fixed left-0 z-30 
-        bg-gradient-to-b from-[#18D16E] via-green-700 to-green-800 text-white 
+        bg-gray-700 via-green-800 to-green-800 text-white 
         w-64 
         transform transition-transform duration-300 ease-in-out
 
