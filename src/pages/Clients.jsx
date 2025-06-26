@@ -6,6 +6,7 @@ import Modal from '../components/ui/Modal';
 import { formatDate } from '../utils/helpers';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
+import PhoneInput from '../components/ui/PhoneInput'; // Add this import
 const Clients = () => {
   const [showClientModal, setShowClientModal] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
@@ -15,6 +16,7 @@ const Clients = () => {
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   const [formData, setFormData] = useState({
     name: '',
@@ -94,7 +96,10 @@ const Clients = () => {
     
     return matchesSearch && matchesFilter;
   });
-
+  const validatePhone = (phone) => {
+    const regex = /^[6-9]\d{9}$/;
+    return regex.test(phone);
+  };
   const handleEditClient = (client) => {
     setCurrentClient(client);
     setShowClientModal(true);
@@ -114,6 +119,14 @@ const Clients = () => {
 
   const handleSubmitClient = async (e) => {
     e.preventDefault();
+        // Validate phone before submission
+    const isValidPhone = validatePhone(formData.phone);
+
+    
+    if (!isValidPhone) {
+      toast.error('Please enter a valid phone number');
+      return;
+    }
     
     try {
       let response;
@@ -386,7 +399,7 @@ const Clients = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Person *
+                  Contact Person Name *
                 </label>
                 <input
                   type="text"
@@ -414,17 +427,30 @@ const Clients = () => {
                 />
               </div>
               
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
+                  Phone Number *
                 </label>
-                <input
-                  type="tel"
-                  name="phone"
+<input
+  type="tel"
+  name="phone"
+  value={formData.phone}
+  onChange={handleInputChange}
+  className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+  placeholder="+91 1234567890"
+  pattern="^\+91[6-9]\d{9}$"
+  required
+/>
+
+              </div> */}
+                        <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number *
+                </label>
+                <PhoneInput
                   value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  placeholder="+1 (555) 123-4567"
+                  onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                  error={!validatePhone(formData.phone)}
                 />
               </div>
               

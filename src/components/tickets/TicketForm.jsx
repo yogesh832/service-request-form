@@ -120,11 +120,13 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
       const formDataToSend = new FormData();
       
       // Append regular form data
-      formDataToSend.append('subject', formData.subject);
-      formDataToSend.append('phone', fullPhone);
-      formDataToSend.append('category', formData.category);
-      formDataToSend.append('priority', formData.priority);
-      formDataToSend.append('description', formData.description);
+const origin = window.location.origin;
+formDataToSend.append('subject', formData.subject);
+formDataToSend.append('phone', fullPhone);
+formDataToSend.append('category', formData.category);
+formDataToSend.append('priority', formData.priority);
+formDataToSend.append('description', formData.description);
+formDataToSend.append('origin', origin); // ✅ Send origin
 
       // Append files if any
       attachments.forEach((attachment, index) => {
@@ -140,8 +142,8 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
-        onTicketCreated(response.data.data.ticket);
-        onClose();
+        // onTicketCreated(response.data.data.ticket);
+        // onClose();
       }, 3000);
       toast.success('Ticket created successfully!');
     } catch (err) {
