@@ -52,7 +52,7 @@ const Home = () => {
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-4">
                   <Link
-                    to="/get-started"
+                    to="/signup"
                     className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg text-base font-semibold shadow-md"
                   >
                     Get Started Free
