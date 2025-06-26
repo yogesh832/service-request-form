@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://5vwd9w13-5000.inc1.devtunnels.ms/', // tumhara backend base URL
+  baseURL: 'https://salka-tech-service-request-backend.onrender.com', // tumhara backend base URL
   withCredentials: true, // agar tum login system ya cookies use kar rahe ho
 });
 
