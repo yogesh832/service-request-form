@@ -29,7 +29,9 @@ const TicketDetail = () => {
     pdf.save(`Ticket-${ticket.ticketNumber}.pdf`);
   };
 
-  if (!ticket) return <p>Loading...</p>;
+  if (!ticket) return <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>;
 
   return (
     <div className="p-4">
