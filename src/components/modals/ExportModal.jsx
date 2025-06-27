@@ -71,10 +71,14 @@ const ExportModal = ({ onClose }) => {
 
       toast.success('Export successful!');
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || 'Export failed');
-    } finally {
-      setLoading(false);
-    }
+  if (error.response?.data?.message?.includes('No data found')) {
+    toast.error('No data found for the selected date range');
+  } else {
+    toast.error(error.response?.data?.message || error.message || 'Export failed');
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   return (
@@ -117,7 +121,7 @@ const ExportModal = ({ onClose }) => {
               <div className="flex gap-4">
                 <Button
                   variant="outline"
-                  onClick={() => handleExport(resource, 'excel')}
+                  onClick={() => handleExport(resource, 'xlsx')}
                   disabled={loading}
                 >
                   <FaFileExcel className="text-green-600 mr-2" /> Excel

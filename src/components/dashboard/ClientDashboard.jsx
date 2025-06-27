@@ -56,7 +56,7 @@ const ClientDashboard = () => {
 
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
-          <h2 className="text-xl font-semibold text-gray-800">Your Tickets 📋</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Your Tickets</h2>
           <div className="flex gap-3">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

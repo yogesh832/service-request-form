@@ -1,43 +1,129 @@
-import { useState } from 'react';
+// import { useState } from 'react';
+// import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
+// import Select from 'react-select';
+// import api from '../../utils/api';
+// import {toast} from 'react-toastify';
+
+
+// const EmployeeSignupForm = () => {
+//   const [formData, setFormData] = useState({
+//     name: '',
+//     email: '',
+//     password: '',
+//     phone: '',
+//     company: null,
+//     role: 'employee', // Default role
+//   });
+
+// //   const [companies, setCompanies] = useState([]);
+ 
+//   const [error, setError] = useState('');
+//   const [isLoading, setIsLoading] = useState(false);
+
+
+// //   useEffect(() => {
+// //     const fetchCompanies = async () => {
+// //       try {
+// //         const res = await api.get('/companies');
+// //         console.log('Fetched companies:', res.data.data.companies);
+// //         const companyOptions = res.data.data.companies.map((company) => ({
+// //           label: company.name,
+// //           value: company._id,
+// //         }));
+// //         setCompanies(companyOptions);
+// //       } catch (err) {
+// //         console.error('Failed to fetch companies:', err);
+// //       }
+// //     };
+
+// //     fetchCompanies();
+// //   }, []);
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   // const handleCompanyChange = (selectedOption) => {
+//   //   setSelectedCompany(selectedOption);
+//   //   console.log('Selected company:', selectedOption);
+//   //   setFormData((prev) => ({
+//   //     ...prev,
+//   //     company: selectedOption ? selectedOption.value : '',
+//   //   }));
+//   // };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError('');
+//     setIsLoading(true);
+
+//     try {
+//       await api.post('/auth/register', formData);
+//       // navigate('/login', { state: { signupSuccess: true } });
+//     } catch (err) {
+//       setError(err.response?.data?.message || 'Registration failed. Please try again.');
+//       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+import { useState ,useEffect } from 'react';
 import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-import Select from 'react-select';
 import api from '../../utils/api';
-import {toast} from 'react-toastify';
-
-
+import { toast } from 'react-toastify';
+import PhoneInput from '../../components/ui/PhoneInput'; // Import the new component
+import Select from 'react-select';
 const EmployeeSignupForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phone: '',
-    company: null,
-    role: 'employee', // Default role
+    role: 'employee',
+    company:''
   });
 
-//   const [companies, setCompanies] = useState([]);
- 
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+ const [phoneError, setPhoneError] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // Handle company selection and update formData
+  const handleCompanyChange = (selectedOption) => {
+    setSelectedCompany(selectedOption);
+    setFormData((prev) => ({
+      ...prev,
+      company: selectedOption ? selectedOption.value : '',
+    }));
+  };
+ 
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const res = await api.get('/companies');
+        console.log('Fetched companies:', res.data.data.companies);
+        const companyOptions = res.data.data.companies.map((company) => ({
+          label: company.name,
+          value: company._id,
+        }));
+        setCompanies(companyOptions);
+      } catch (err) {
+        console.error('Failed to fetch companies:', err);
+      }
+    };
 
+    fetchCompanies();
+  }, []);
 
-//   useEffect(() => {
-//     const fetchCompanies = async () => {
-//       try {
-//         const res = await api.get('/companies');
-//         console.log('Fetched companies:', res.data.data.companies);
-//         const companyOptions = res.data.data.companies.map((company) => ({
-//           label: company.name,
-//           value: company._id,
-//         }));
-//         setCompanies(companyOptions);
-//       } catch (err) {
-//         console.error('Failed to fetch companies:', err);
-//       }
-//     };
-
-//     fetchCompanies();
-//   }, []);
+  const validatePhone = (phone) => {
+    const regex = /^[6-9]\d{9}$/;
+    return regex.test(phone);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,23 +133,44 @@ const EmployeeSignupForm = () => {
     }));
   };
 
-  // const handleCompanyChange = (selectedOption) => {
-  //   setSelectedCompany(selectedOption);
-  //   console.log('Selected company:', selectedOption);
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     company: selectedOption ? selectedOption.value : '',
-  //   }));
-  // };
+  const handlePhoneChange = (value) => {
+    setFormData(prev => ({ ...prev, phone: value }));
+    
+    if (phoneTouched) {
+      setPhoneError(!validatePhone(value));
+    }
+  };
+
+  const handlePhoneBlur = () => {
+    setPhoneTouched(true);
+    setPhoneError(!validatePhone(formData.phone));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Validate phone before submission
+    const isValidPhone = validatePhone(formData.phone);
+    setPhoneTouched(true);
+    setPhoneError(!isValidPhone);
+    
+    if (!isValidPhone) {
+      toast.error('Please enter a valid phone number');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await api.post('/auth/register', formData);
-      // navigate('/login', { state: { signupSuccess: true } });
+      // Add country code to phone number
+      const dataToSend = {
+        ...formData,
+        phone: `+91${formData.phone}`
+      };
+      
+      await api.post('/auth/register', dataToSend);
+      toast.success('Account created successfully!');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -121,20 +228,18 @@ const EmployeeSignupForm = () => {
               />
             </div>
 
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaPhone className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                name="phone"
+                <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number *
+              </label>
+              <PhoneInput
                 value={formData.phone}
-                onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                placeholder="Phone Number"
-                required
+                onChange={handlePhoneChange}
+                error={phoneError}
+                onBlur={handlePhoneBlur}
               />
             </div>
+
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -163,7 +268,7 @@ const EmployeeSignupForm = () => {
               <option value="admin">Admin</option>
             </select>
 
-            {/* <div>
+            <div>
               <label className="block text-gray-700 mb-1">Select Company</label>
               <Select
                 value={selectedCompany}
@@ -172,7 +277,7 @@ const EmployeeSignupForm = () => {
                 placeholder="Search and select a company"
                 isClearable={false}
               />
-            </div> */}
+            </div>
           </div>
 
           <button

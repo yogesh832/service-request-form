@@ -27,7 +27,7 @@ const Profile = () => {
         const response = await api.get(`/users/me`);
         // console.log('Fetched profile:', response.data.data.user);
             localStorage.setItem('user', JSON.stringify(response.data.data.user));
-            // console.log('User data saved to localStorage:', response.data.data.user);
+            console.log('User data saved to localStorage:', response.data.data.user);
         setProfileData(response.data.data.user);
         if (response.data.data.user.profilePhoto) {
           setFilePreview(response.data.data.user.profilePhoto);
@@ -42,17 +42,32 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // ✅ Check type
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error('Only JPG, PNG or WEBP images are allowed');
+      return;
     }
-  };
+
+    // ✅ Check size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be less than or equal to 2MB');
+      return;
+    }
+
+    // ✅ If all good, preview and set
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFilePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,12 +129,15 @@ const Profile = () => {
             <div className="flex flex-col items-center">
               <div className="relative">
                 {filePreview ? (
-               <img 
-  src={filePreview} 
-  alt="Profile" 
-  style={{ maxWidth: '100%', height: 'auto' }} 
-  className="mb-4"
-/>
+<div className="w-24 h-24 rounded-lg overflow-hidden flex items-center justify-center bg-gray-100">
+  <img 
+
+    src={filePreview} 
+    alt="Profile" 
+    className="max-w-full max-h-full object-contain" 
+  />
+</div>
+
 
                 ) : (
                   <div className="bg-gradient-to-r from-green-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4">

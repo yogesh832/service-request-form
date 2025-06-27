@@ -10,29 +10,53 @@ const ForgotPasswordForm = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+  //   setIsLoading(true);
     
-    try {
-      // Make API request to forgot password endpoint
-      await api.post('/auth/forgotpassword', { email });
+  //   try {
+  //     // Make API request to forgot password endpoint
+  //     await api.post('/auth/forgotpassword', { email });
       
-      // Show success message
-      setIsSubmitted(true);
-      toast.success('Password reset email sent successfully!');
-    } catch (err) {
-      // Handle errors
-      setError(
-        err.response?.data?.message || 
-        'Failed to send reset email. Please try again.'
-      );
-      toast.error(err.response?.data?.message || 'Error sending reset email');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     // Show success message
+  //     setIsSubmitted(true);
+  //     toast.success('Password reset email sent successfully!');
+  //   } catch (err) {
+  //     // Handle errors
+  //     setError(
+  //       err.response?.data?.message || 
+  //       'Failed to send reset email. Please try again.'
+  //     );
+  //     toast.error(err.response?.data?.message || 'Error sending reset email');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setIsLoading(true);
+
+  try {
+    const origin = window.location.origin; // 👈 gets "https://service-request-jhgh.vercel.app"
+
+    await api.post('/auth/forgotpassword', {
+      email,
+      origin, // ✅ send origin to backend
+    });
+
+    setIsSubmitted(true);
+    toast.success('Password reset email sent successfully!');
+  } catch (err) {
+    setError(
+      err.response?.data?.message || 'Failed to send reset email. Please try again.'
+    );
+    toast.error(err.response?.data?.message || 'Error sending reset email');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-white px-4 py-8">

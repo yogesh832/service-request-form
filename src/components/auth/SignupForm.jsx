@@ -3,7 +3,8 @@ import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../../utils/api';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
+import PhoneInput from '../../components/ui/PhoneInput'; // Import the new component
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -12,14 +13,17 @@ const SignupForm = () => {
     password: '',
     phone: '',
     company: null,
-    role: 'client', // Default role
+    role: 'client',
   });
 
+  const [phoneError, setPhoneError] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -38,6 +42,10 @@ const SignupForm = () => {
 
     fetchCompanies();
   }, []);
+  const validatePhone = (phone) => {
+    const regex = /^[6-9]\d{9}$/;
+    return regex.test(phone);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,9 +55,21 @@ const SignupForm = () => {
     }));
   };
 
+  const handlePhoneChange = (value) => {
+    setFormData(prev => ({ ...prev, phone: value }));
+    
+    if (phoneTouched) {
+      setPhoneError(!validatePhone(value));
+    }
+  };
+
+  const handlePhoneBlur = () => {
+    setPhoneTouched(true);
+    setPhoneError(!validatePhone(formData.phone));
+  };
+
   const handleCompanyChange = (selectedOption) => {
     setSelectedCompany(selectedOption);
-    console.log('Selected company:', selectedOption);
     setFormData((prev) => ({
       ...prev,
       company: selectedOption ? selectedOption.value : '',
@@ -59,10 +79,27 @@ const SignupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Validate phone before submission
+    const isValidPhone = validatePhone(formData.phone);
+    setPhoneTouched(true);
+    setPhoneError(!isValidPhone);
+    
+    if (!isValidPhone) {
+      toast.error('Please enter a valid phone number');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await api.post('/auth/register', formData);
+      // Add country code to phone number
+      const dataToSend = {
+        ...formData,
+        phone: `+91${formData.phone}`
+      };
+      
+      await api.post('/auth/register', dataToSend);
       navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -71,6 +108,7 @@ const SignupForm = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-white px-4 py-8">
@@ -120,7 +158,7 @@ const SignupForm = () => {
                 required
               />
             </div>
-
+{/* 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FaPhone className="text-gray-400" />
@@ -133,6 +171,18 @@ const SignupForm = () => {
                 className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 placeholder="Phone Number"
                 required
+              />
+            </div> */}
+                        {/* Phone Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number *
+              </label>
+              <PhoneInput
+                value={formData.phone}
+                onChange={handlePhoneChange}
+                error={phoneError}
+                onBlur={handlePhoneBlur}
               />
             </div>
 
