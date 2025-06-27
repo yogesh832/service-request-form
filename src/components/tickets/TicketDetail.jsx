@@ -41,7 +41,7 @@ const TicketDetail = () => {
       </div>
 
       <div ref={printRef} className="bg-white p-6 rounded shadow-md text-gray-800">
-        <h2 className="text-xl font-bold mb-4 text-center">Salka Tech</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">SALKATECH</h2>
         <p><strong>Ticket Number:</strong> {ticket.ticketNumber}</p>
         <p><strong>Subject:</strong> {ticket.subject}</p>
         <p><strong>Description:</strong> {ticket.description}</p>

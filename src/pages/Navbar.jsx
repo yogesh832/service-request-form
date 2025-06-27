@@ -19,32 +19,26 @@ const Navbar = () => {
     {
       name: "Services",
       path: "https://salkatech.com/#oem-auth",
-      external: true,
     },
     {
       name: "Projects",
       path: "https://salkatech.com/#portfolio",
-      external: true,
     },
     {
       name: "Products",
       path: "https://salkatech.com/#products",
-      external: true,
     },
     {
       name: "Our Approach",
       path: "https://salkatech.com/#work",
-      external: true,
     },
     {
       name: "Testing Service",
       path: "https://salkatech.com/#approch",
-      external: true,
     },
     {
       name: "Our Values",
       path: "https://salkatech.com/#call-to-action",
-      external: true,
     },
     { name: "About", path: "https://salkatech.com/#about", external: true },
     { name: "Contact", path: "https://salkatech.com/#contact", external: true },
@@ -74,7 +68,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className="bg-black text-white px-6 py-4 shadow-md sticky top-0 z-50"
+      className="bg-transparent text-white px-6 py-4 shadow-md sticky top-0 z-50"
       data-aos="fade-down"
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -83,7 +77,7 @@ const Navbar = () => {
           href="https://salkatech.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center space-x-2"
+          className="flex items-center "
         >
           <img src={logo} className="h-10" alt="Logo" />
           <span className="text-2xl font-bold text-green-500">SALKA</span>

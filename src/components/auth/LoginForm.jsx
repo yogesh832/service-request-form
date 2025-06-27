@@ -56,7 +56,7 @@ toast.success("Login successful!");
           <div className="mx-auto bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center mb-4">
             <FaLock className="text-white text-2xl" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-800">Welcome to <span className="text-[#18D16E]">SALKA </span>TECH</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Welcome to <span className="text-[#18D16E]"> </span>SALKATECH</h2>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
 

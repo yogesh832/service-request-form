@@ -4,11 +4,16 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import heroimg1 from "../assets/heroimg1.png";
-import heroimg2 from "../assets/heroimg2.png";
+// import heroimg2 from "../assets/heroimg2.png";
 import Navbar from "./Navbar";
-import { FaArrowRight, FaShieldAlt, FaChartLine, FaHeadset } from "react-icons/fa";
-
-const slides = [heroimg1, heroimg2];
+import {
+  FaArrowRight,
+  FaShieldAlt,
+  FaChartLine,
+  FaHeadset,
+} from "react-icons/fa";
+import logo from "../assets/logo.png";
+// const heroimg1 = heroimg;
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700 hover:shadow-lg transition text-white">
@@ -24,51 +29,48 @@ const Home = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        navigation={{
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        }}
-        autoplay={{ delay: 4000 }}
-        loop={true}
-        className="h-[80vh] sm:h-screen"
-      >
-        {slides.map((slide, index) => (
-          <SwiperSlide key={index}>
-            <div
-              className="relative h-[80vh] sm:h-screen flex items-center justify-center bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide})` }}
-            >
-              <div className="absolute inset-0 bg-black opacity-70"></div>
 
-              <div className="relative z-10 max-w-2xl text-center px-4 sm:px-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
-                  Modern Support Ticketing System
-                </h1>
-                <p className="mt-4 text-base sm:text-lg text-gray-300">
-                  Streamline your customer support with our intuitive platform. <br className="hidden sm:block" />
-                  Resolve issues faster and keep your customers happy.
-                </p>
-                <div className="mt-6 flex flex-wrap justify-center gap-4">
-                  <Link
-                    to="/signup"
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg text-base font-semibold shadow-md"
-                  >
-                    Get Started Free
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
-                  >
-                    Sign In
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      <div
+        className="relative h-[80vh] sm:h-screen flex items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: `url(${heroimg1})` }}
+      >
+        <div className="absolute inset-0 bg-black opacity-70"></div>
+
+        <div className="relative z-10 max-w-2xl text-center px-4 sm:px-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
+            <a
+              href="https://salkatech.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center h-30  "
+            >
+              <img src={logo} className="h-20 " alt="Logo" />
+              <span className="text-3xl font-bold text-green-500">SALKA</span>
+              <span className="text-3xl font-bold text-white">TECH</span>
+            </a>{" "}
+            Support Ticketing System
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-gray-300">
+            Streamline your customer support with our intuitive platform.{" "}
+            <br className="hidden sm:block" />
+            Resolve issues faster and keep your customers happy.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-4">
+            <Link
+              to="/signup"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 rounded-lg text-base font-semibold shadow-md"
+            >
+              Get Started Free
+            </Link>
+            <Link
+              to="/login"
+              className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Hide Swiper arrows on small screens */}
       <style>
@@ -86,7 +88,9 @@ const Home = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Powerful Features</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+              Powerful Features
+            </h2>
             <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
               Everything you need to manage customer support efficiently
             </p>
@@ -117,41 +121,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Trusted by Teams Worldwide</h2>
-            <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
-              Join thousands of satisfied customers who use our platform daily
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="bg-gray-900 p-6 sm:p-8 rounded-xl shadow-md border border-gray-700">
-                <div className="text-yellow-400 mb-4 flex">
-                  {'★'.repeat(5)}
-                </div>
-                <p className="text-gray-300 text-sm sm:text-base mb-6">
-                  "This platform has transformed how we handle customer support. 
-                  Our resolution times have improved by 40% since implementation."
-                </p>
-                <div className="flex items-center">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                    U
-                  </div>
-                  <div>
-                    <p className="font-medium text-white text-sm sm:text-base">Sarah Johnson</p>
-                    <p className="text-gray-400 text-xs sm:text-sm">Support Manager, TechCorp</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-700 to-purple-700">
         <div className="max-w-4xl mx-auto text-center">
@@ -159,7 +128,8 @@ const Home = () => {
             Ready to Transform Your Support Experience?
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-10">
-            Join thousands of companies that trust our platform for their customer support needs.
+            Join thousands of companies that trust our platform for their
+            customer support needs.
           </p>
           <Link
             to="/signup"

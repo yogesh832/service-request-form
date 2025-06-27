@@ -133,7 +133,7 @@ const Sidebar = ({ isOpen, toggle }) => {
 
 
           </div>
-          <h1 className="text-xl font-bold">SALKA TECH</h1>
+          <h1 className="text-xl font-bold">SALKATECH</h1>
         </div>
       </div>
 
