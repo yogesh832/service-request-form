@@ -31,7 +31,7 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(true);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const fileInputRef = useRef(null);
   const countryDropdownRef = useRef(null);
@@ -140,26 +140,35 @@ formDataToSend.append('origin', origin); // ✅ Send origin
       });
 
       setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-        // onTicketCreated(response.data.data.ticket);
-        // onClose();
-      }, 3000);
+      // setTimeout(() => {
+      //   setShowSuccess(false);
+      //   // onTicketCreated(response.data.data.ticket);
+      //   // onClose();
+      // }, 3000);
       toast.success('Ticket created successfully!');
+      setFormData({
+    subject: '',
+    phone: '',
+    countryCode: '+91', // Default country code
+    phoneNumber: '',
+    category: 'technical',
+    priority: 'medium',
+    description: '',
+  })
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to create ticket';
-      
-      // Handle backend validation errors
-      if (errorMessage.toLowerCase().includes('phone') || 
-          errorMessage.toLowerCase().includes('number')) {
-        setPhoneError(errorMessage);
-      } else {
-        setError(errorMessage);
-      }
-      
-      console.error('Error creating ticket:', err);
-      toast.error(errorMessage);
-    } finally {
+  const errorMessage = err.response?.data?.message || 'Failed to create ticket';
+
+  if (errorMessage.toLowerCase().includes('phone') || 
+      errorMessage.toLowerCase().includes('number')) {
+    setPhoneError(errorMessage);
+  } else {
+    setError(errorMessage);
+  }
+
+  console.error('Error creating ticket:', err);
+  toast.error(errorMessage);
+}
+finally {
       setIsSubmitting(false);
     }
   };
@@ -188,7 +197,15 @@ formDataToSend.append('origin', origin); // ✅ Send origin
             <div className="bg-white p-8 rounded-lg text-center">
               <h3 className="text-2xl font-bold text-gray-800 mb-4">We Will Revert You Soon</h3>
               <p>Your ticket has been submitted successfully.</p>
+                      <button
+  onClick={() => setShowSuccess(false)}
+  className="mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-300"
+>
+  OK
+</button>
             </div>
+
+
           </div>
         )}
         
