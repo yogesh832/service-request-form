@@ -132,14 +132,14 @@ const TicketDetail = () => {
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
             Ticket Details
           </h1>
-          <button 
+          {/* <button 
             onClick={downloadPdf}
             className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium shadow-lg
                       hover:shadow-xl hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 transform hover:-translate-y-0.5
                       focus:ring-4 focus:ring-blue-400 focus:ring-opacity-50"
           >
             Download PDF
-          </button>
+          </button> */}
         </div>
 
         <div 

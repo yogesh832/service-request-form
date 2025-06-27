@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://service-request-form-backend-kcy2.onrender.com/api',
 });
+// https://service-request-form-backend-kcy2.onrender.com
 
 api.interceptors.request.use(config => {
         
