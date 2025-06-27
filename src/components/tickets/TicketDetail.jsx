@@ -126,6 +126,29 @@ const TicketDetail = () => {
   );
 
   return (
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Ticket Details</h1>
+        <button onClick={downloadPdf} className="bg-blue-600 text-white px-4 py-2 rounded">
+          Download PDF
+        </button>
+      </div>
+
+      <div ref={printRef} className="bg-white p-6 rounded shadow-md text-gray-800">
+        <h2 className="text-xl font-bold mb-4 text-center">SALKATECH</h2>
+        <p><strong>Ticket Number:</strong> {ticket.ticketNumber}</p>
+        <p><strong>Subject:</strong> {ticket.subject}</p>
+        <p><strong>Description:</strong> {ticket.description}</p>
+        <p><strong>Status:</strong> {ticket.status}</p>
+        <p><strong>Priority:</strong> {ticket.priority}</p>
+        <p><strong>Created At:</strong> {new Date(ticket.createdAt).toLocaleString()}</p>
+
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold mb-2">Client Info</h3>
+          <p><strong>Name:</strong> {ticket.user.name}</p>
+          <p><strong>Email:</strong> {ticket.user.email}</p>
+          <p><strong>Phone:</strong> {ticket.user.phone}</p>
+          <p><strong>Company:</strong> {ticket.company?.name}</p>
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
@@ -258,6 +281,11 @@ const TicketDetail = () => {
         </div>
       </div>
     </div>
+    </div>
+    </div>
+    </div>
+    
+
   );
 };
 
