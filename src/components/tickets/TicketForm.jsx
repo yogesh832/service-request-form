@@ -31,7 +31,7 @@ const TicketForm = ({ onClose, onTicketCreated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const fileInputRef = useRef(null);
   const countryDropdownRef = useRef(null);
