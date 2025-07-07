@@ -82,6 +82,12 @@ const Sidebar = ({ isOpen, toggle }) => {
       roles: ["admin"],
     },
     {
+      path: `/signup`,
+      label: "Client Signup",
+      icon: <FaUserTie />,
+      roles: ["admin"],
+    },
+    {
       path: `${basePath}/make-admin`,
       label: "Make Admin",
       icon: <MdAdminPanelSettings />,

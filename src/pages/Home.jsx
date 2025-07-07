@@ -127,7 +127,7 @@ const Home = () => {
             customer support needs.
           </p>
           <Link
-            to="/signup"
+            to="/login"
             className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:bg-gray-100 transition-all"
           >
             Start Now <FaArrowRight className="ml-2" />

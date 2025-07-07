@@ -1,7 +1,7 @@
 import Button from '../components/ui/Button';
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { FaUser, FaEnvelope, FaLock, FaCamera } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaCamera, FaSave } from 'react-icons/fa';
 import Card from '../components/ui/Card';
 import { toast } from 'react-toastify';
 
@@ -67,24 +67,23 @@ const Profile = () => {
 };
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
-    if (name === 'phone') {
-      const isValid = /^\d{0,10}$/.test(value); // restrict to 10 digits max
-      if (!isValid) return;
-      if (value && value.length !== 10) {
-        setErrors((prev) => ({ ...prev, phone: 'Phone number must be 10 digits' }));
-      } else {
-        setErrors((prev) => ({ ...prev, phone: '' }));
-      }
-    }
+  if (name === 'phone') {
+    const isNumeric = /^[0-9]*$/.test(value);
+    if (!isNumeric) return;
 
-    setProfileData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+    setErrors((prev) => ({ ...prev, phone: '' }));
+  }
+
+  setProfileData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
