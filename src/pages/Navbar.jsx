@@ -16,31 +16,7 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    {
-      name: "Services",
-      path: "https://salkatech.com/#oem-auth",
-    },
-    {
-      name: "Projects",
-      path: "https://salkatech.com/#portfolio",
-    },
-    {
-      name: "Products",
-      path: "https://salkatech.com/#products",
-    },
-    {
-      name: "Our Approach",
-      path: "https://salkatech.com/#work",
-    },
-    {
-      name: "Testing Service",
-      path: "https://salkatech.com/#approch",
-    },
-    {
-      name: "Our Values",
-      path: "https://salkatech.com/#call-to-action",
-    },
-    { name: "About", path: "https://salkatech.com/#about", external: true },
+  
     { name: "Contact", path: "https://salkatech.com/#contact", external: true },
   ];
 
@@ -75,7 +51,6 @@ const Navbar = () => {
         {/* Logo */}
         <a
           href="https://salkatech.com"
-          target="_blank"
           rel="noopener noreferrer"
           className="flex items-center "
         >
@@ -85,13 +60,22 @@ const Navbar = () => {
         </a>
 
         {/* Desktop Menu */}
-        <ul className="hidden lg:flex space-x-6 text-lg">
-          {navItems.map((item) => (
-            <li key={item.name} data-aos="fade-down">
-              {renderLink(item)}
-            </li>
-          ))}
-        </ul>
+      <ul className="hidden lg:flex space-x-6 text-lg">
+  {navItems.map((item) => (
+    <li key={item.name} data-aos="fade-down">
+      {renderLink(item)}
+    </li>
+  ))}
+  <li>
+    <Link
+      to="/login"
+      className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
+    >
+      Sign In
+    </Link>
+  </li>
+</ul>
+
 
         {/* Hamburger Icon */}
         <div className="lg:hidden">
