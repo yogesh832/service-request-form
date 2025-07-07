@@ -25,10 +25,17 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const response = await api.get(`/users/me`);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
-        setProfileData(response.data.data.user);
-        if (response.data.data.user.profilePhoto) {
-          setFilePreview(response.data.data.user.profilePhoto);
+        const user = response.data.data.user;
+
+        localStorage.setItem('user', JSON.stringify(user));
+
+        setProfileData({
+          ...user,
+          phone: user.phone?.startsWith('+91') ? user.phone.slice(3) : user.phone
+        });
+
+        if (user.profilePhoto) {
+          setFilePreview(user.profilePhoto);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -40,54 +47,50 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
- const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const validImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error('❌ Only JPG, PNG or WEBP images are allowed');
+      return;
+    }
 
-  // ✅ Validate file type
-  if (!validImageTypes.includes(file.type)) {
-    toast.error('❌ Only JPG, PNG or WEBP images are allowed');
-    return;
-  }
+    const maxSizeMB = 2;
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      toast.error(`❌ Image must be less than or equal to ${maxSizeMB}MB`);
+      return;
+    }
 
-  // ✅ Validate file size (<= 2MB)
-  const maxSizeMB = 2;
-  if (file.size > maxSizeMB * 1024 * 1024) {
-    toast.error(`❌ Image must be less than or equal to ${maxSizeMB}MB`);
-    return;
-  }
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setFilePreview(reader.result);
+    reader.readAsDataURL(file);
+  };
 
-  // ✅ Set file and preview
-  setSelectedFile(file);
-  const reader = new FileReader();
-  reader.onloadend = () => setFilePreview(reader.result);
-  reader.readAsDataURL(file);
-};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
+    if (name === 'phone') {
+      const isNumeric = /^[0-9]*$/.test(value);
+      if (!isNumeric) return;
+      setErrors((prev) => ({ ...prev, phone: '' }));
+    }
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  if (name === 'phone') {
-    const isNumeric = /^[0-9]*$/.test(value);
-    if (!isNumeric) return;
-
-    setErrors((prev) => ({ ...prev, phone: '' }));
-  }
-
-  setProfileData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
-
-
+    setProfileData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (profileData.phone && profileData.phone.length !== 10) {
+
+    let phone = profileData.phone?.trim() || '';
+    if (phone.startsWith('+91')) phone = phone.slice(3);
+
+    if (phone && phone.length !== 10) {
       toast.error('Phone number must be exactly 10 digits');
       return;
     }
@@ -96,7 +99,7 @@ const handleChange = (e) => {
       const formData = new FormData();
       formData.append('name', profileData.name);
       formData.append('email', profileData.email);
-      if (profileData.phone) formData.append('phone', profileData.phone);
+      if (phone) formData.append('phone', `+91${phone}`);
       if (selectedFile) {
         formData.append('profilePhoto', selectedFile);
       }
@@ -105,7 +108,13 @@ const handleChange = (e) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setProfileData(response.data.data.user);
+      setProfileData({
+        ...response.data.data.user,
+        phone: response.data.data.user.phone?.startsWith('+91')
+          ? response.data.data.user.phone.slice(3)
+          : response.data.data.user.phone,
+      });
+
       if (response.data.data.user.profilePhoto) {
         setFilePreview(response.data.data.user.profilePhoto);
       }
@@ -165,7 +174,9 @@ const handleChange = (e) => {
               </div>
               <h2 className="text-xl font-bold text-gray-800">{profileData?.name}</h2>
               <p className="text-gray-600 capitalize">{profileData?.role}</p>
-              <p className="text-sm text-gray-500 mt-1">{profileData?.company?.name || profileData?.company}</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {profileData?.company?.name || profileData?.company}
+              </p>
             </div>
           </Card>
         </div>
@@ -247,7 +258,7 @@ const handleChange = (e) => {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FaUser className="text-gray-400" />
+                      <span className="text-gray-400">+91</span>
                     </div>
                     <input
                       type="text"
