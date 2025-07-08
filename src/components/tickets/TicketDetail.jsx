@@ -197,7 +197,7 @@ const TicketDetail = () => {
                         </p>
                         <p className="text-lg font-semibold">
                           <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            className={`px-3  rounded-full text-sm font-medium ${
                               ticket.status === "Open"
                                 ? "bg-blue-100 text-blue-800"
                                 : ticket.status === "Closed"
