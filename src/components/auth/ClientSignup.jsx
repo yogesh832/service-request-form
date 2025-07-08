@@ -6,7 +6,7 @@ import api from "../../utils/api";
 import { toast } from "react-toastify";
 import PhoneInput from "../../components/ui/PhoneInput"; // Import the new component
 
-const SignupForm = () => {
+const ClientSignup = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -99,7 +99,7 @@ const SignupForm = () => {
       };
 
       await api.post("/auth/register", dataToSend);
-      // navigate('/login', { state: { signupSuccess: true } });
+      //   navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       setError(
         err.response?.data?.message || "Registration failed. Please try again."
@@ -181,7 +181,6 @@ const SignupForm = () => {
                 Phone Number *
               </label>
               <PhoneInput
-                type="number"
                 value={formData.phone}
                 onChange={handlePhoneChange}
                 error={phoneError}
@@ -271,4 +270,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default ClientSignup;

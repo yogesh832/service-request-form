@@ -14,6 +14,7 @@ const ClientAnalytics = () => {
       try {
         const res = await api.get('/tickets');
         setTickets(res.data.data.tickets || []);
+        console.log('Fetched tickets:', res.data.data.tickets);
       } catch (error) {
         console.error('Error fetching tickets:', error);
       }
@@ -181,7 +182,7 @@ const ClientAnalytics = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {recentResolved.map(ticket => (
                 <tr key={ticket._id}>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{ticket._id.slice(-6)}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{ticket.ticketNumber}</td>
                   <td className="px-4 py-4 text-sm text-gray-900">{ticket.subject}</td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs rounded-full capitalize ${

@@ -82,7 +82,7 @@ const Sidebar = ({ isOpen, toggle }) => {
       roles: ["admin"],
     },
     {
-      path: `/signup`,
+      path: `${basePath}/client-signup`,
       label: "Client Signup",
       icon: <FaUserTie />,
       roles: ["admin"],

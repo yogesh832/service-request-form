@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { FaSearch, FaFilter, FaFileExport } from 'react-icons/fa';
-import AssignTicketModal from '../modals/AssignTicketModal';
-import ExportModal from '../modals/ExportModal';
-import TicketList from '../tickets/TicketList';
-import Card from '../ui/Card';
-import Button from '../ui/Button';
-import TicketStats from '../tickets/TicketStats';
-import BarChart from '../ui/Charts/BarChart';
-import PieChart from '../ui/Charts/PieChart';
-import api from '../../utils/api';
+import { useState, useEffect } from "react";
+import { FaSearch, FaFilter, FaFileExport } from "react-icons/fa";
+import AssignTicketModal from "../modals/AssignTicketModal";
+import ExportModal from "../modals/ExportModal";
+import TicketList from "../tickets/TicketList";
+import Card from "../ui/Card";
+import Button from "../ui/Button";
+import TicketStats from "../tickets/TicketStats";
+import BarChart from "../ui/Charts/BarChart";
+import PieChart from "../ui/Charts/PieChart";
+import api from "../../utils/api";
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -16,10 +16,10 @@ const AdminDashboard = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
-  const [filter, setFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
   // Fetch initial data
@@ -27,14 +27,14 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const userData = JSON.parse(localStorage.getItem('user'));
+        const userData = JSON.parse(localStorage.getItem("user"));
         setCurrentUser(userData);
-        
-        const res = await api.get('/tickets');
+
+        const res = await api.get("/tickets");
         setTickets(res.data.data.tickets);
       } catch (err) {
-        setError('Failed to load tickets');
-        console.error('Error fetching tickets:', err);
+        setError("Failed to load tickets");
+        console.error("Error fetching tickets:", err);
       } finally {
         setLoading(false);
       }
@@ -45,18 +45,18 @@ const AdminDashboard = () => {
   // Fetch employees for a specific ticket
   const fetchEmployeesForTicket = async (ticketId) => {
     try {
-      console.log('Fetching employees for ticket:', ticketId);
+      console.log("Fetching employees for ticket:", ticketId);
       const res = await api.get(`/tickets/${ticketId}/employees`);
       setEmployees(res.data.data.employees);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      console.error("Error fetching employees:", error);
     }
   };
 
   // Handle assign button click
   const handleAssignClick = (ticketId) => {
     setSelectedTicketId(ticketId);
-    console.log('Assigning ticket:', ticketId);
+    console.log("Assigning ticket:", ticketId);
 
     fetchEmployeesForTicket(ticketId);
     setShowAssignModal(true);
@@ -65,63 +65,73 @@ const AdminDashboard = () => {
   // Handle ticket assignment
   const handleAssign = async (ticketId, employeeId) => {
     try {
-      await api.patch(`/tickets/${ticketId}/assign`, { 
-        assignedTo: employeeId 
+      await api.patch(`/tickets/${ticketId}/assign`, {
+        assignedTo: employeeId,
       });
-      
-      setTickets(prev =>
-        prev.map(ticket =>
-          ticket._id === ticketId 
-            ? { 
-                ...ticket, 
-                assignedTo: employees.find(e => e._id === employeeId) 
-              } 
+
+      setTickets((prev) =>
+        prev.map((ticket) =>
+          ticket._id === ticketId
+            ? {
+                ...ticket,
+                assignedTo: employees.find((e) => e._id === employeeId),
+              }
             : ticket
         )
       );
       setShowAssignModal(false);
     } catch (error) {
-      console.error('Assignment failed:', error);
+      console.error("Assignment failed:", error);
     }
   };
 
   // Filter tickets based on status and search term
-  const filteredTickets = tickets.filter(ticket => {
+  const filteredTickets = tickets.filter((ticket) => {
     // Apply status filter
-    if (filter !== 'all' && ticket.status !== filter) {
+    if (filter !== "all" && ticket.status !== filter) {
       return false;
     }
-    
+
     // Apply search term filter if exists
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       return (
-        (ticket.subject && ticket.subject.toLowerCase().includes(searchLower)) ||
-        (ticket.description && ticket.description.toLowerCase().includes(searchLower)) ||
-        (ticket.company && ticket.company.name && ticket.company.name.toLowerCase().includes(searchLower)) ||
+        (ticket.subject &&
+          ticket.subject.toLowerCase().includes(searchLower)) ||
+        (ticket.description &&
+          ticket.description.toLowerCase().includes(searchLower)) ||
+        (ticket.company &&
+          ticket.company.name &&
+          ticket.company.name.toLowerCase().includes(searchLower)) ||
         (ticket._id && ticket._id.toLowerCase().includes(searchLower))
       );
     }
-    
+
     return true;
   });
 
   // Prepare data for charts
   const statsData = [
-    { name: 'Open', value: tickets.filter(t => t.status === 'open').length },
-    { name: 'Pending', value: tickets.filter(t => t.status === 'pending').length },
-    { name: 'Resolved', value: tickets.filter(t => t.status === 'resolved').length }
+    { name: "Open", value: tickets.filter((t) => t.status === "open").length },
+    {
+      name: "Pending",
+      value: tickets.filter((t) => t.status === "pending").length,
+    },
+    {
+      name: "Resolved",
+      value: tickets.filter((t) => t.status === "resolved").length,
+    },
   ];
 
   const companyStats = tickets.reduce((acc, ticket) => {
-    const companyName = ticket.company?.name || 'Unknown';
+    const companyName = ticket.company?.name || "Unknown";
     acc[companyName] = (acc[companyName] || 0) + 1;
     return acc;
   }, {});
 
   const companyData = Object.entries(companyStats).map(([name, value]) => ({
     name,
-    value
+    value,
   }));
 
   if (loading) {
@@ -136,7 +146,7 @@ const AdminDashboard = () => {
     return (
       <div className="py-12 text-center text-red-500">
         {error}
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
         >
@@ -152,7 +162,9 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage all support tickets and assignments</p>
+          <p className="text-gray-600">
+            Manage all support tickets and assignments
+          </p>
         </div>
         <div className="flex gap-3">
           <Button
@@ -187,7 +199,7 @@ const AdminDashboard = () => {
         <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {tickets.slice(0, 4).map(ticket => (
+            {tickets.slice(0, 4).map((ticket) => (
               <div
                 key={ticket._id}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
@@ -210,20 +222,10 @@ const AdminDashboard = () => {
       {/* Tickets List Section */}
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
-          <h2 className="text-xl font-semibold text-gray-800">All Tickets 📋</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            All Tickets 📋
+          </h2>
           <div className="flex gap-3">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaSearch className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search tickets..."
-                className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
             <div className="relative">
               <select
                 value={filter}
@@ -251,7 +253,7 @@ const AdminDashboard = () => {
       {/* Modals */}
       {showAssignModal && selectedTicketId && (
         <AssignTicketModal
-          ticket={tickets.find(t => t._id === selectedTicketId)}
+          ticket={tickets.find((t) => t._id === selectedTicketId)}
           employees={employees}
           onClose={() => setShowAssignModal(false)}
           onAssign={handleAssign}

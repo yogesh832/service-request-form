@@ -7,6 +7,7 @@ import EmployeeSignup from './components/auth/EmployeeSignupFrom';
 import MakeAdmin from './pages/MakeAdminPanel';
 import ManageUsersPage from './pages/ManageUserPage';
 import TicketDetail from './components/tickets/TicketDetail'
+import ClientSignup from './components/auth/ClientSignup';
 // Lazy imports
 const Home = lazy(() => import('./pages/Home'));
 const LoginForm = lazy(() => import('./components/auth/LoginForm'));
@@ -106,6 +107,11 @@ function App() {
                     <Route path="employee-signup" element={
             <PrivateRoute roles={['admin']}>
               <EmployeeSignup />
+            </PrivateRoute>
+          } />
+                    <Route path="client-signup" element={
+            <PrivateRoute roles={['admin']}>
+              <ClientSignup />
             </PrivateRoute>
           } />
           <Route path="make-admin" element={
