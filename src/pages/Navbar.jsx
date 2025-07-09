@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { FaBars, FaTimes } from "react-icons/fa";
@@ -16,31 +16,34 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-  
-    { name: "Contact", path: "https://salkatech.com/#contact", external: true },
+    { name: "Contact", path: "#contact" }, // Internal anchor
   ];
 
-  const renderLink = (item) =>
-    item.external ? (
-      <a
-        href={item.path}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block hover:text-green-400"
-      >
-        {item.name}
-      </a>
-    ) : (
-      <NavLink
-        to={item.path}
-        className={({ isActive }) =>
-          `block hover:text-green-400 ${isActive ? "text-green-400" : ""}`
-        }
-        onClick={() => setIsOpen(false)}
-      >
-        {item.name}
-      </NavLink>
-    );
+  const renderLink = (item) => {
+    if (item.path.startsWith("#")) {
+      // Anchor link scroll
+      return (
+        <a
+          href={item.path}
+          onClick={() => setIsOpen(false)}
+          className="block hover:text-green-400"
+        >
+          {item.name}
+        </a>
+      );
+    } else {
+      // Regular routing
+      return (
+        <Link
+          to={item.path}
+          className="block hover:text-green-400"
+          onClick={() => setIsOpen(false)}
+        >
+          {item.name}
+        </Link>
+      );
+    }
+  };
 
   return (
     <nav
@@ -52,30 +55,37 @@ const Navbar = () => {
         <a
           href="https://salkatech.com"
           rel="noopener noreferrer"
-          className="flex items-center "
+          className="flex items-center"
         >
           <img src={logo} className="h-10" alt="Logo" />
-          <span className="text-2xl font-bold text-green-500">SALKA</span>
-          <span className="text-2xl font-bold text-white">TECH</span>
+          <span
+            className="text-2xl font-bold text-green-500"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
+            SALKA
+          </span>
+          <span
+            className="text-2xl font-bold text-white"
+            style={{ fontFamily: "Montserrat, sans-serif" }}
+          >
+            TECH
+          </span>
         </a>
 
         {/* Desktop Menu */}
-      <ul className="hidden lg:flex space-x-6 text-lg">
-  {navItems.map((item) => (
-    <li key={item.name} data-aos="fade-down">
-      {renderLink(item)}
-    </li>
-  ))}
-  <li>
-    <Link
-      to="/login"
-      className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
-    >
-      Sign In
-    </Link>
-  </li>
-</ul>
-
+        <ul className="hidden lg:flex space-x-6 text-lg">
+          {navItems.map((item) => (
+            <li key={item.name}>{renderLink(item)}</li>
+          ))}
+          <li>
+            <Link
+              to="/login"
+              className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
+            >
+              Sign In
+            </Link>
+          </li>
+        </ul>
 
         {/* Hamburger Icon */}
         <div className="lg:hidden">
@@ -87,13 +97,18 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div
-          className="lg:hidden mt-4 px-4 py-4 bg-black border-t border-gray-700 space-y-4 text-lg animate-slide-down"
-          data-aos="fade-down"
-        >
+        <div className="lg:hidden mt-4 px-4 py-4 bg-black border-t border-gray-700 space-y-4 text-lg">
           {navItems.map((item) => (
             <div key={item.name}>{renderLink(item)}</div>
           ))}
+          <div>
+            <Link
+              to="/login"
+              className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       )}
     </nav>

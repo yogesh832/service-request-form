@@ -177,7 +177,7 @@ const Clients = () => {
           }}
           className="flex items-center gap-2"
         >
-          <FaPlus /> New Client
+          <FaPlus /> New Company
         </Button>
       </div>
       

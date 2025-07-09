@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, toggle }) => {
       ? [
           {
             path: `${basePath}/clients`,
-            label: "Clients",
+            label: "Company",
             icon: <FaUsers />,
             roles: ["admin"],
           },
@@ -129,12 +129,12 @@ const Sidebar = ({ isOpen, toggle }) => {
     >
       <div className="flex items-center justify-between p-5 border-b border-green-700">
         <div className="flex items-center gap-2">
-          <div className="bg-white p-2 rounded-lg">
+          <div className=" p-2 rounded-lg">
             {/* <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div> */}
 <img
   src={logo}
   alt="Profile"
-  className="w-8 h-8 rounded-lg object-contain"
+  className="w-12 h-12 rounded-lg object-contain"
 />
 
 
@@ -168,15 +168,8 @@ const Sidebar = ({ isOpen, toggle }) => {
         <div className="mt-8 pt-6 border-t border-green-900">
           <div className="px-4 py-3 bg-green-800 rounded-lg">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-b from-[#18D16E] via-green-500 to-green-600 w-10 h-10 rounded-full flex items-center justify-center">
-                <span className="font-bold">
-                  {user.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-medium">{user.name}</p>
-                <p className="text-sm text-blue-200 capitalize">{user.role}</p>
-              </div>
+              
+            
             </div>
           </div>
         </div>

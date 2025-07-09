@@ -45,8 +45,18 @@ const Home = () => {
               className="flex items-center justify-center h-30  "
             >
               <img src={logo} className="h-20 " alt="Logo" />
-              <span className="text-3xl font-bold text-green-500">SALKA</span>
-              <span className="text-3xl font-bold text-white">TECH</span>
+              <span
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+                className="text-3xl font-bold text-green-500"
+              >
+                SALKA
+              </span>
+              <span
+                style={{ fontFamily: "Montserrat, sans-serif" }}
+                className="text-3xl font-bold text-white"
+              >
+                TECH
+              </span>
             </a>{" "}
             Support Ticketing System
           </h1>
@@ -56,7 +66,6 @@ const Home = () => {
             Resolve issues faster and keep your customers happy.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-4">
-           
             <Link
               to="/login"
               className="bg-white text-gray-800 px-6 py-3 rounded-lg text-base font-semibold shadow-md hover:bg-gray-200"
@@ -116,24 +125,58 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-700 to-purple-700">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Transform Your Support Experience?
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-10">
-            Join thousands of companies that trust our platform for their
-            customer support needs.
-          </p>
-          <Link
-            to="/login"
-            className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 font-bold rounded-xl shadow-lg hover:bg-gray-100 transition-all"
-          >
-            Start Now <FaArrowRight className="ml-2" />
-          </Link>
-        </div>
-      </section>
+   {/* CTA Section: Contact Us */}
+{/* CTA Section: Contact Us */}
+<section id="contact" className="bg-white text-black py-16 px-4 sm:px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto text-center">
+    <h2 className="text-3xl font-bold mb-2">Contact Us</h2>
+    <div className="h-1 w-20 mx-auto bg-green-500 mb-4 rounded"></div>
+    <p className="text-gray-600 mb-12">Looking forward to talking with you!</p>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      {/* Address */}
+      <div className="flex flex-col items-center space-y-4">
+        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" strokeWidth="2"
+          viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round"
+            d="M12 11c1.656 0 3-1.344 3-3S13.656 5 12 5s-3 1.344-3 3 1.344 3 3 3zm0 2c-2.5 0-7 1.25-7 3.75V19h14v-2.25C19 14.25 14.5 13 12 13z" />
+        </svg>
+        <h3 className="font-semibold">SALKA GLOBAL TECHNOLOGIES PVT. LTD.</h3>
+        <p className="text-sm text-gray-600">
+          UTC, Tower A, S1 Floor, Unit#119,<br />
+          Sector – 132, Express Way,<br />
+          Noida UP 201304
+        </p>
+      </div>
+
+      {/* Phone Numbers */}
+      <div className="flex flex-col items-center space-y-4">
+        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" strokeWidth="2"
+          viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round"
+            d="M3 5h2l3.6 7.59L5.25 17h13.5l-3.35-4.41L19 5H5l-.94 1.6z" />
+        </svg>
+        <h3 className="font-semibold">Phone Number</h3>
+        <p className="text-sm text-gray-600">
+          +91-9999364459<br />
+          +91-9599471439
+        </p>
+      </div>
+
+      {/* Email */}
+      <div className="flex flex-col items-center space-y-4">
+        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" strokeWidth="2"
+          viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round"
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <h3 className="font-semibold">Email</h3>
+        <p className="text-sm text-gray-600">info@salkatech.com</p>
+      </div>
+    </div>
+  </div>
+</section>
+
     </div>
   );
 };

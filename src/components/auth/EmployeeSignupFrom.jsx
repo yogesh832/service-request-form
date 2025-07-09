@@ -1,144 +1,56 @@
-// import { useState } from 'react';
-// import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-// import Select from 'react-select';
-// import api from '../../utils/api';
-// import {toast} from 'react-toastify';
+import { useState, useEffect } from "react";
+import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+import api from "../../utils/api";
+import { toast } from "react-toastify";
+import PhoneInput from "../../components/ui/PhoneInput";
 
-
-// const EmployeeSignupForm = () => {
-//   const [formData, setFormData] = useState({
-//     name: '',
-//     email: '',
-//     password: '',
-//     phone: '',
-//     company: null,
-//     role: 'employee', // Default role
-//   });
-
-// //   const [companies, setCompanies] = useState([]);
- 
-//   const [error, setError] = useState('');
-//   const [isLoading, setIsLoading] = useState(false);
-
-
-// //   useEffect(() => {
-// //     const fetchCompanies = async () => {
-// //       try {
-// //         const res = await api.get('/companies');
-// //         console.log('Fetched companies:', res.data.data.companies);
-// //         const companyOptions = res.data.data.companies.map((company) => ({
-// //           label: company.name,
-// //           value: company._id,
-// //         }));
-// //         setCompanies(companyOptions);
-// //       } catch (err) {
-// //         console.error('Failed to fetch companies:', err);
-// //       }
-// //     };
-
-// //     fetchCompanies();
-// //   }, []);
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   // const handleCompanyChange = (selectedOption) => {
-//   //   setSelectedCompany(selectedOption);
-//   //   console.log('Selected company:', selectedOption);
-//   //   setFormData((prev) => ({
-//   //     ...prev,
-//   //     company: selectedOption ? selectedOption.value : '',
-//   //   }));
-//   // };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setError('');
-//     setIsLoading(true);
-
-//     try {
-//       await api.post('/auth/register', formData);
-//       // navigate('/login', { state: { signupSuccess: true } });
-//     } catch (err) {
-//       setError(err.response?.data?.message || 'Registration failed. Please try again.');
-//       toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-import { useState ,useEffect } from 'react';
-import { FaUser, FaLock, FaEnvelope, FaPhone } from 'react-icons/fa';
-import api from '../../utils/api';
-import { toast } from 'react-toastify';
-import PhoneInput from '../../components/ui/PhoneInput'; // Import the new component
-import Select from 'react-select';
 const EmployeeSignupForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    role: 'employee',
-    company:''
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "employee",
+    company: "", // Will be set via Salkatech _id
   });
 
-  const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
- const [phoneError, setPhoneError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  // Handle company selection and update formData
-  const handleCompanyChange = (selectedOption) => {
-    setSelectedCompany(selectedOption);
-    setFormData((prev) => ({
-      ...prev,
-      company: selectedOption ? selectedOption.value : '',
-    }));
-  };
- 
+
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchCompanyId = async () => {
       try {
-        const res = await api.get('/companies');
-        console.log('Fetched companies:', res.data.data.companies);
-        const companyOptions = res.data.data.companies.map((company) => ({
-          label: company.name,
-          value: company._id,
-        }));
-        setCompanies(companyOptions);
+        const res = await api.get("/companies");
+        const companies = res.data.data.companies;
+        const salkatech = companies.find(
+          (company) => company.name.toLowerCase() === "salkatech"
+        );
+        if (salkatech) {
+          setFormData((prev) => ({ ...prev, company: salkatech._id }));
+        } else {
+          toast.error("Salkatech company not found");
+        }
       } catch (err) {
-        console.error('Failed to fetch companies:', err);
+        console.error("Failed to fetch companies", err);
+        toast.error("Failed to fetch companies");
       }
     };
 
-    fetchCompanies();
+    fetchCompanyId();
   }, []);
 
-  const validatePhone = (phone) => {
-    const regex = /^[6-9]\d{9}$/;
-    return regex.test(phone);
-  };
+  const validatePhone = (phone) => /^[6-9]\d{9}$/.test(phone);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePhoneChange = (value) => {
-    setFormData(prev => ({ ...prev, phone: value }));
-    
-    if (phoneTouched) {
-      setPhoneError(!validatePhone(value));
-    }
+    setFormData((prev) => ({ ...prev, phone: value }));
+    if (phoneTouched) setPhoneError(!validatePhone(value));
   };
 
   const handlePhoneBlur = () => {
@@ -148,32 +60,24 @@ const EmployeeSignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    // Validate phone before submission
+    setError("");
     const isValidPhone = validatePhone(formData.phone);
     setPhoneTouched(true);
     setPhoneError(!isValidPhone);
-    
-    if (!isValidPhone) {
-      toast.error('Please enter a valid phone number');
-      return;
-    }
+    if (!isValidPhone) return toast.error("Please enter a valid phone number");
 
     setIsLoading(true);
-
     try {
-      // Add country code to phone number
       const dataToSend = {
         ...formData,
-        phone: `+91${formData.phone}`
+        phone: `+91${formData.phone}`,
       };
-      
-      await api.post('/auth/register', dataToSend);
-      toast.success('Account created successfully!');
+      await api.post("/auth/register", dataToSend);
+      toast.success("Account created successfully!");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
-      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+      const message = err.response?.data?.message || "Registration failed.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -207,7 +111,7 @@ const EmployeeSignupForm = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200"
                 placeholder="Full Name"
                 required
               />
@@ -222,16 +126,14 @@ const EmployeeSignupForm = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200"
                 placeholder="Email Address"
                 required
               />
             </div>
 
-                <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number *
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
               <PhoneInput
                 value={formData.phone}
                 onChange={handlePhoneChange}
@@ -239,7 +141,6 @@ const EmployeeSignupForm = () => {
                 onBlur={handlePhoneBlur}
               />
             </div>
-
 
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -250,32 +151,30 @@ const EmployeeSignupForm = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="pl-10 w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200"
                 placeholder="Password"
                 minLength={6}
                 required
               />
             </div>
 
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full py-3 px-4 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              required
-            >
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
-            </select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <input
+                type="text"
+                value="Employee"
+                disabled
+                className="w-full py-3 px-4 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 cursor-not-allowed"
+              />
+            </div>
 
             <div>
-              <label className="block text-gray-700 mb-1">Select Company</label>
-              <Select
-                value={selectedCompany}
-                onChange={handleCompanyChange}
-                options={companies}
-                placeholder="Search and select a company"
-                isClearable={false}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+              <input
+                type="text"
+                value="Salkatech"
+                disabled
+                className="w-full py-3 px-4 rounded-xl bg-gray-100 border border-gray-200 text-gray-600 cursor-not-allowed"
               />
             </div>
           </div>
@@ -285,8 +184,8 @@ const EmployeeSignupForm = () => {
             disabled={isLoading}
             className={`w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl shadow-lg transition-all duration-300 flex justify-center items-center ${
               isLoading
-                ? 'opacity-70 cursor-not-allowed'
-                : 'hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:-translate-y-0.5'
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:-translate-y-0.5"
             }`}
           >
             {isLoading ? (
@@ -314,19 +213,10 @@ const EmployeeSignupForm = () => {
                 Processing...
               </>
             ) : (
-              'Create Account'
+              "Create Account"
             )}
           </button>
         </form>
-
-        {/* <div className="mt-6 text-center">
-          <p className="text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Sign in
-            </Link>
-          </p>
-        </div> */}
       </div>
     </section>
   );
