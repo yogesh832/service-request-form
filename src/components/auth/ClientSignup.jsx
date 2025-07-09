@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaLock, FaEnvelope, FaPhone } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Select from "react-select";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
@@ -22,7 +22,6 @@ const ClientSignup = () => {
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -100,6 +99,7 @@ const ClientSignup = () => {
 
       await api.post("/auth/register", dataToSend);
       //   navigate('/login', { state: { signupSuccess: true } });
+      toast.success("Registration successful! Please log in.");
     } catch (err) {
       setError(
         err.response?.data?.message || "Registration failed. Please try again."
