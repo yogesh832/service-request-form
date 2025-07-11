@@ -134,12 +134,12 @@ const Sidebar = ({ isOpen, toggle }) => {
 <img
   src={logo}
   alt="Profile"
-  className="w-12 h-12 rounded-lg object-contain"
+  className="w-16 h-16 rounded-lg object-contain"
 />
 
 
           </div>
-          <h1 className="text-xl font-bold">SALKATECH</h1>
+          <h1 className="text-2xl font-bold">SALKATECH</h1>
         </div>
       </div>
 
