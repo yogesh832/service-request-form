@@ -454,22 +454,29 @@ const Clients = () => {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Plan Type *
-                </label>
-                <select
-                  name="plan"
-                  value={formData.plan}
-                  onChange={handleInputChange}
-                  className="w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  required
-                >
-                  <option value="Starter">Starter</option>
-                  <option value="Professional">Professional</option>
-                  <option value="Enterprise">Enterprise</option>
-                </select>
-              </div>
+          <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Plan Type *
+  </label>
+  <select
+    name="plan"
+    value={formData.plan}
+    onChange={handleInputChange}
+    disabled={!!currentClient} // disable when editing
+    className={`w-full py-2.5 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${currentClient ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+    required
+  >
+    <option value="Starter">Starter</option>
+    <option value="Professional">Professional</option>
+    <option value="Enterprise">Enterprise</option>
+  </select>
+  {currentClient && (
+    <p className="text-xs text-gray-500 mt-1">
+      Plan type cannot be changed once the company is created.
+    </p>
+  )}
+</div>
+
               
               <div className="flex justify-end gap-3 pt-4">
                 <button
