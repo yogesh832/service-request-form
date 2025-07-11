@@ -225,7 +225,7 @@ const Clients = () => {
       
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
-          <h2 className="text-xl font-semibold text-gray-800">All Clients</h2>
+          <h2 className="text-xl font-semibold text-gray-800">All Company</h2>
           <div className="flex gap-3">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -233,7 +233,7 @@ const Clients = () => {
               </div>
               <input 
                 type="text" 
-                placeholder="Search clients..."
+                placeholder="Search Company..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 py-2 px-4 rounded-lg bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -356,7 +356,7 @@ const Clients = () => {
           {filteredCompanies.length === 0 && (
             <div className="py-12 text-center">
               {/* <div className="text-gray-400 text-5xl mb-4">🏢</div> */}
-              <h3 className="text-lg font-medium text-gray-600">No clients found</h3>
+              <h3 className="text-lg font-medium text-gray-600">No Company found</h3>
               <p className="text-gray-500 mt-1">
                 {searchTerm ? 'Try changing your search terms' : 'Create your first client'}
               </p>
