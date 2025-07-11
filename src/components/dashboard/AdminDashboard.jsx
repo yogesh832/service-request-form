@@ -183,7 +183,7 @@ const AdminDashboard = () => {
         </div>
         <Card className="p-5 flex flex-col items-center justify-center">
           <h3 className="text-lg font-semibold mb-4">Status Distribution</h3>
-          <div className="h-64 w-full">
+          <div className="h-64 w-400">
             <PieChart data={statsData} />
           </div>
         </Card>
