@@ -349,86 +349,39 @@ const UserManagementPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50">
-                    <td className="py-4 px-4">
-                      <div className="flex items-center">
-                        {user.profilePhoto ? (
-                          <img
-                            src={user.profilePhoto}
-                            alt={user.name}
-                            className="w-10 h-10 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10 flex items-center justify-center">
-                            <FaUserAlt className="text-gray-400" />
-                          </div>
-                        )}
-                        <div className="ml-3">
-                          {editingUserId === user._id ? (
-                            <input
-                              type="text"
-                              name="name"
-                              value={editForm.name}
-                              onChange={handleEditChange}
-                              className="py-1 px-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {filteredUsers.map((user) =>
+                  editingUserId === user._id ? null : (
+                    <tr key={user._id} className="hover:bg-gray-50">
+                      <td className="py-4 px-4">
+                        <div className="flex items-center">
+                          {user.profilePhoto ? (
+                            <img
+                              src={user.profilePhoto}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-full object-cover"
                             />
                           ) : (
+                            <div className="bg-gray-200 border-2 border-dashed rounded-full w-10 h-10 flex items-center justify-center">
+                              <FaUserAlt className="text-gray-400" />
+                            </div>
+                          )}
+                          <div className="ml-3">
                             <p className="font-medium text-gray-900">
                               {user.name}
                             </p>
-                          )}
-                          <p className="text-sm text-gray-500">
-                            ID: {user._id.substring(0, 8)}
-                          </p>
+                            <p className="text-sm text-gray-500">
+                              ID: {user._id.slice(0, 8)}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-4">
-                      {editingUserId === user._id ? (
-                        <div className="space-y-2">
-                          <input
-                            type="email"
-                            name="email"
-                            value={editForm.email}
-                            onChange={handleEditChange}
-                            className="w-full py-1 px-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <input
-                            type="text"
-                            name="phone"
-                            value={editForm.phone}
-                            onChange={handleEditChange}
-                            className="w-full py-1 px-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Phone number"
-                          />
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="text-gray-900">{user.email}</p>
-                          <p className="text-sm text-gray-500">
-                            {user.phone || "No phone number"}
-                          </p>
-                        </div>
-                      )}
-                    </td>
-
-                    <td className="py-4 px-4">
-                      {editingUserId === user._id ? (
-                        <>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(
-                              user.role
-                            )}`}
-                          >
-                            {editForm.role}
-                          </span>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Role editing is disabled
-                          </p>
-                        </>
-                      ) : (
+                      </td>
+                      <td className="py-4 px-4">
+                        <p className="text-gray-900">{user.email}</p>
+                        <p className="text-sm text-gray-500">
+                          {user.phone || "No phone"}
+                        </p>
+                      </td>
+                      <td className="py-4 px-4">
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(
                             user.role
@@ -436,52 +389,31 @@ const UserManagementPage = () => {
                         >
                           {user.role}
                         </span>
-                      )}
-                    </td>
-
-                    <td className="py-4 px-4 text-gray-700">
-                      {formatDate(user.createdAt)}
-                    </td>
-
-                    <td className="py-4 px-4">
-                      {editingUserId === user._id ? (
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => saveUser(user._id)}
-                            className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
-                            title="Save"
-                          >
-                            <FaSave />
-                          </button>
-                          <button
-                            onClick={cancelEditing}
-                            className="p-2 bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-colors"
-                            title="Cancel"
-                          >
-                            <FaTimes />
-                          </button>
-                        </div>
-                      ) : (
+                      </td>
+                      <td className="py-4 px-4 text-gray-700">
+                        {formatDate(user.createdAt)}
+                      </td>
+                      <td className="py-4 px-4">
                         <div className="flex space-x-2">
                           <button
                             onClick={() => startEditing(user)}
-                            className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                            className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
                             title="Edit"
                           >
                             <FaEdit />
                           </button>
                           <button
                             onClick={() => deleteUser(user._id)}
-                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                            className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
                             title="Delete"
                           >
                             <FaTrash />
                           </button>
                         </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>
