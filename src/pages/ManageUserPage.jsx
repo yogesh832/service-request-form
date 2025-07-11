@@ -189,7 +189,53 @@ const UserManagementPage = () => {
           Clear Filters
         </button>
       </div>
-
+   {editingUserId && (
+        <div className="mt-8 p-6 my-4 border rounded-xl bg-gray-50 shadow-inner">
+          <h3 className="text-lg font-semibold mb-4">Edit User</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <input
+              type="text"
+              name="name"
+              value={editForm.name}
+              onChange={handleEditChange}
+              placeholder="Name"
+              className="py-2 px-4 border rounded-lg"
+            />
+            <input
+              type="email"
+              name="email"
+              value={editForm.email}
+              onChange={handleEditChange}
+              placeholder="Email"
+              className="py-2 px-4 border rounded-lg"
+            />
+            <input
+              type="text"
+              name="phone"
+              value={editForm.phone}
+              onChange={handleEditChange}
+              placeholder="Phone"
+              className="py-2 px-4 border rounded-lg"
+            />
+          </div>
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={() => saveUser(editingUserId)}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            >
+              <FaSave className="inline mr-2" />
+              Save
+            </button>
+            <button
+              onClick={cancelEditing}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+            >
+              <FaTimes className="inline mr-2" />
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       {filteredUsers.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <p>No users found</p>
@@ -265,53 +311,7 @@ const UserManagementPage = () => {
         </div>
       )}
 
-      {editingUserId && (
-        <div className="mt-8 p-6 border rounded-xl bg-gray-50 shadow-inner">
-          <h3 className="text-lg font-semibold mb-4">Edit User</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="text"
-              name="name"
-              value={editForm.name}
-              onChange={handleEditChange}
-              placeholder="Name"
-              className="py-2 px-4 border rounded-lg"
-            />
-            <input
-              type="email"
-              name="email"
-              value={editForm.email}
-              onChange={handleEditChange}
-              placeholder="Email"
-              className="py-2 px-4 border rounded-lg"
-            />
-            <input
-              type="text"
-              name="phone"
-              value={editForm.phone}
-              onChange={handleEditChange}
-              placeholder="Phone"
-              className="py-2 px-4 border rounded-lg"
-            />
-          </div>
-          <div className="mt-4 flex gap-3">
-            <button
-              onClick={() => saveUser(editingUserId)}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-            >
-              <FaSave className="inline mr-2" />
-              Save
-            </button>
-            <button
-              onClick={cancelEditing}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-            >
-              <FaTimes className="inline mr-2" />
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+   
     </div>
   );
 };
