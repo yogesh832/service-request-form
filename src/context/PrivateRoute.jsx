@@ -9,7 +9,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/me', { withCredentials: true });
+        const res = await axios.get('https://service-request-form-backend-kcy2.onrender.com/api/auth/me', { withCredentials: true });
         const fetchedUser = res.data.user;
         setUser(fetchedUser);
 
