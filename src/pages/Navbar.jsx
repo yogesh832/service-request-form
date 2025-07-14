@@ -4,7 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { FaBars, FaTimes } from "react-icons/fa";
 import logo from "../assets/logo.png";
-
+import salkaName from "../assets/salkatech_Name.png"
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -58,18 +58,9 @@ const Navbar = () => {
           className="flex items-center"
         >
           <img src={logo} className="h-10" alt="Logo" />
-          <span
-            className="text-2xl font-bold text-green-500"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            SALKA
-          </span>
-          <span
-            className="text-2xl font-bold text-white"
-            style={{ fontFamily: "Montserrat, sans-serif" }}
-          >
-            TECH
-          </span>
+          <img src={salkaName} className="h-6" alt="Logo" />
+          
+         
         </a>
 
         {/* Desktop Menu */}

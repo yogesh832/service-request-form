@@ -7,13 +7,15 @@ import {
   FaCog,
   FaQuestionCircle,
   FaUsersCog,
-  FaUserShield ,
-  FaUserTie 
+  FaUserShield,
+  FaUserTie,
 } from "react-icons/fa";
-import { RiAdminFill } from 'react-icons/ri';
-import { MdAdminPanelSettings } from 'react-icons/md';
+import { RiAdminFill } from "react-icons/ri";
+import { MdAdminPanelSettings } from "react-icons/md";
 import { useEffect, useState } from "react";
-import logo from '../../assets/logo.png';
+import logo from "../../assets/logo.png";
+import salkaName from "../../assets/salkatech_Name.png";
+
 const Sidebar = ({ isOpen, toggle }) => {
   const [user, setUser] = useState(null);
 
@@ -50,7 +52,6 @@ const Sidebar = ({ isOpen, toggle }) => {
             icon: <FaUsers />,
             roles: ["admin"],
           },
-
         ]
       : []),
     ...(user.role === "client"
@@ -129,17 +130,13 @@ const Sidebar = ({ isOpen, toggle }) => {
     >
       <div className="flex items-center justify-between p-5 border-b border-green-700">
         <div className="flex items-center gap-2">
-          <div className=" p-2 rounded-lg">
-            {/* <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div> */}
-<img
-  src={logo}
-  alt="Profile"
-  className="w-16 h-16 rounded-lg object-contain"
-/>
-
-
-          </div>
-          <h1 className="text-2xl font-bold">SALKATECH</h1>
+          {/* <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-8 h-8 rounded-lg"></div> */}
+          <img
+            src={logo}
+            alt="Profile"
+            className="w-10 h-10 rounded-lg object-contain"
+          />
+          <img src={salkaName} className="h-4 w-32" alt="Logo" />
         </div>
       </div>
 
@@ -167,10 +164,7 @@ const Sidebar = ({ isOpen, toggle }) => {
 
         <div className="mt-8 pt-6 border-t border-green-900">
           <div className="px-4 py-3 bg-green-800 rounded-lg">
-            <div className="flex items-center gap-3">
-              
-            
-            </div>
+            <div className="flex items-center gap-3"></div>
           </div>
         </div>
       </nav>

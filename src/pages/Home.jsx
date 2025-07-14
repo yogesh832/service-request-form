@@ -8,6 +8,7 @@ import Navbar from "./Navbar";
 import { FiMapPin, FiPhone, FiMail } from "react-icons/fi";
 import { FaArrowRight, FaShieldAlt, FaChartLine, FaHeadset } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import salkaName from "../assets/salkatech_Name.png"
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700 hover:shadow-lg transition text-white">
@@ -37,12 +38,8 @@ const Home = () => {
               className="flex items-center justify-center h-30"
             >
               <img src={logo} className="h-20" alt="Logo" />
-              <span className="text-3xl font-bold text-green-500" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                SALKA
-              </span>
-              <span className="text-3xl font-bold text-white" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                TECH
-              </span>
+          <img src={salkaName} className="h-6" alt="Logo" />
+             
             </a>{" "}
             Support Ticketing System
           </h1>
@@ -136,7 +133,6 @@ const Home = () => {
               <h3 className="font-semibold">Phone Number</h3>
               <p className="text-sm text-gray-600">
                 +91-9999364459<br />
-                +91-9599471439
               </p>
             </div>
 
