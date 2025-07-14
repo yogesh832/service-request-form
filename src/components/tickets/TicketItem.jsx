@@ -141,7 +141,7 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
       )}
 
       {/* Admin: Assign button */}
-      {!ticket.assignedTo && userRole === 'admin' && (
+      {/* {!ticket.assignedTo && userRole === 'admin' && (
         <div className="mt-3 flex justify-end">
           <button
             onClick={() => onAssignClick(ticket._id)}
@@ -150,7 +150,19 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
             Assign Ticket
           </button>
         </div>
-      )}
+      )} */}
+{userRole === 'admin' && (
+  <div className="mt-3 flex justify-end">
+    <button
+      onClick={() => onAssignClick(ticket._id)}
+      className={`px-3 py-1 text-white rounded text-sm ${
+        ticket.assignedTo ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'
+      }`}
+    >
+      {ticket.assignedTo ? 'Reassign Ticket' : 'Assign Ticket'}
+    </button>
+  </div>
+)}
 
       {/* View Full Ticket Button */}
       <div className="mt-4 flex justify-end">
