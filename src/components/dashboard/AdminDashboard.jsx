@@ -9,6 +9,7 @@ import TicketStats from "../tickets/TicketStats";
 import BarChart from "../ui/Charts/BarChart";
 import PieChart from "../ui/Charts/PieChart";
 import api from "../../utils/api";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -17,12 +18,12 @@ const AdminDashboard = () => {
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [assignError, setAssignError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,7 +43,6 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  // Fetch employees for a specific ticket
   const fetchEmployeesForTicket = async (ticketId) => {
     try {
       console.log("Fetching employees for ticket:", ticketId);
@@ -53,22 +53,27 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle assign button click
   const handleAssignClick = (ticketId) => {
     setSelectedTicketId(ticketId);
-    console.log("Assigning ticket:", ticketId);
-
+    setAssignError(""); // reset any previous error
     fetchEmployeesForTicket(ticketId);
     setShowAssignModal(true);
   };
 
-  // Handle ticket assignment
   const handleAssign = async (ticketId, employeeId) => {
     try {
-      await api.patch(`/tickets/${ticketId}/assign`, {
+      const res = await api.patch(`/tickets/${ticketId}/assign`, {
         assignedTo: employeeId,
       });
 
+      const result = res.data;
+
+      if (result.success === false) {
+        toast.error(result.message || "❌ Assignment failed");
+        return;
+      }
+
+      // ✅ Success
       setTickets((prev) =>
         prev.map((ticket) =>
           ticket._id === ticketId
@@ -79,20 +84,20 @@ const AdminDashboard = () => {
             : ticket
         )
       );
+      toast.success("✅ Ticket assigned successfully");
       setShowAssignModal(false);
     } catch (error) {
       console.error("Assignment failed:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "❌ Assignment failed due to server error"
+      );
     }
   };
 
-  // Filter tickets based on status and search term
   const filteredTickets = tickets.filter((ticket) => {
-    // Apply status filter
-    if (filter !== "all" && ticket.status !== filter) {
-      return false;
-    }
+    if (filter !== "all" && ticket.status !== filter) return false;
 
-    // Apply search term filter if exists
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       return (
@@ -110,7 +115,6 @@ const AdminDashboard = () => {
     return true;
   });
 
-  // Prepare data for charts
   const statsData = [
     { name: "Open", value: tickets.filter((t) => t.status === "open").length },
     {
@@ -158,7 +162,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Section */}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
@@ -176,7 +180,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats and Charts Section */}
+      {/* Stats & Pie Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2">
           <TicketStats tickets={tickets} />
@@ -189,6 +193,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
+      {/* Bar Chart & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
         <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Tickets by Company</h3>
@@ -219,7 +224,7 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Tickets List Section */}
+      {/* All Tickets Table */}
       <Card className="p-0">
         <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-800">
@@ -257,6 +262,7 @@ const AdminDashboard = () => {
           employees={employees}
           onClose={() => setShowAssignModal(false)}
           onAssign={handleAssign}
+          error={assignError}
         />
       )}
 
