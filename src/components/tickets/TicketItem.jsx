@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaPaperclip, FaDownload } from 'react-icons/fa';
-import { formatDate } from '../../utils/helpers';
-import api from '../../utils/api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaPaperclip, FaDownload } from "react-icons/fa";
+import { formatDate } from "../../utils/helpers";
+import api from "../../utils/api";
 
 const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
   const [status, setStatus] = useState(ticket.status);
   const [isUpdating, setIsUpdating] = useState(false);
   const navigate = useNavigate();
 
-  const userData = JSON.parse(localStorage.getItem('user'));
+  const userData = JSON.parse(localStorage.getItem("user"));
   const userRole = userData?.role;
 
-  const isAssignedEmployee = userRole === 'admin' || userRole === 'employee';
+  const isAssignedEmployee = userRole === "admin" || userRole === "employee";
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
@@ -22,7 +22,7 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
       setStatus(newStatus);
       onStatusChange?.(ticket._id, newStatus);
     } catch (error) {
-      console.error('Failed to update status', error);
+      console.error("Failed to update status", error);
     } finally {
       setIsUpdating(false);
     }
@@ -30,7 +30,7 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
 
   const renderUserCard = (user, label) => {
     if (!user) return null;
-    const fallbackLetter = user.name?.charAt(0).toUpperCase() || '?';
+    const fallbackLetter = user.name?.charAt(0).toUpperCase() || "?";
 
     return (
       <div className="flex items-center gap-3 mt-3">
@@ -46,7 +46,9 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
           </div>
         )}
         <div className="text-sm">
-          <p className="font-semibold">{label}: {user.name}</p>
+          <p className="font-semibold">
+            {label}: {user.name}
+          </p>
           <p className="text-gray-600">{user.email}</p>
           <p className="text-gray-600">{user.phone}</p>
         </div>
@@ -60,13 +62,19 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
       <div className="flex justify-between items-start">
         <div>
           <h3 className="font-semibold text-gray-800">{ticket.subject}</h3>
-          <p className="text-gray-600 text-sm mt-1 line-clamp-2">{ticket.description}</p>
+          <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+            {ticket.description}
+          </p>
         </div>
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-          ticket.priority === 'high' ? 'bg-red-100 text-red-800' :
-          ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-green-100 text-green-800'
-        }`}>
+        <span
+          className={`text-xs font-medium px-2 py-1 rounded-full ${
+            ticket.priority === "high"
+              ? "bg-red-100 text-red-800"
+              : ticket.priority === "medium"
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-green-100 text-green-800"
+          }`}
+        >
           {ticket.priority}
         </span>
       </div>
@@ -89,24 +97,28 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
       </div>
 
       {/* Creator Info (for admin & employee) */}
-      {(userRole === 'admin' || userRole === 'employee') && ticket.user && (
-        renderUserCard(ticket.user, 'User')
-      )}
+      {(userRole === "admin" || userRole === "employee") &&
+        ticket.user &&
+        renderUserCard(ticket.user, "User")}
 
       {/* Assigned Employee Info (only for admin) */}
-      {userRole === 'admin' && ticket.assignedTo && renderUserCard(ticket.assignedTo, 'Assigned To')}
+      {userRole === "admin" &&
+        ticket.assignedTo &&
+        renderUserCard(ticket.assignedTo, "Assigned To")}
 
       {/* Status Dropdown (admin + employee) */}
       {isAssignedEmployee && (
         <div className="mt-3">
-          <select 
+          <select
             value={status}
             onChange={handleStatusChange}
-            disabled={isUpdating || (userRole === 'employee' && status === 'resolved')}
+            disabled={
+              isUpdating || (userRole === "employee" && status === "resolved")
+            }
             className={`w-full py-2 px-3 rounded-lg border ${
-              isUpdating || (userRole === 'employee' && status === 'resolved')
-                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                : 'bg-white'
+              isUpdating || (userRole === "employee" && status === "resolved")
+                ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                : "bg-white"
             }`}
           >
             <option value="open">Open</option>
@@ -114,9 +126,13 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
             <option value="resolved">Resolved</option>
           </select>
 
-          {isUpdating && <p className="text-xs text-gray-500 mt-1">Updating...</p>}
-          {userRole === 'employee' && status === 'resolved' && (
-            <p className="text-xs text-red-500 mt-1">Resolved ticket cannot be changed.</p>
+          {isUpdating && (
+            <p className="text-xs text-gray-500 mt-1">Updating...</p>
+          )}
+          {userRole === "employee" && status === "resolved" && (
+            <p className="text-xs text-red-500 mt-1">
+              Resolved ticket cannot be changed.
+            </p>
           )}
         </div>
       )}
@@ -127,7 +143,7 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
           <p className="text-sm font-medium mb-1">Attachments:</p>
           <div className="flex flex-wrap gap-2">
             {ticket.attachments.map((file, index) => (
-              <a 
+              <a
                 key={index}
                 href={file.path}
                 download
@@ -151,18 +167,20 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
           </button>
         </div>
       )} */}
-{userRole === 'admin' && (
-  <div className="mt-3 flex justify-end">
-    <button
-      onClick={() => onAssignClick(ticket._id)}
-      className={`px-3 py-1 text-white rounded text-sm ${
-        ticket.assignedTo ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'
-      }`}
-    >
-      {ticket.assignedTo ? 'Reassign Ticket' : 'Assign Ticket'}
-    </button>
-  </div>
-)}
+      {userRole === "admin" && (
+        <div className="mt-3 flex justify-end">
+          <button
+            onClick={() => onAssignClick(ticket._id)}
+            className={`px-3 py-1 text-white rounded text-sm ${
+              ticket.assignedTo
+                ? "bg-yellow-500 hover:bg-yellow-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            {ticket.assignedTo ? "Reassign Ticket" : "Assign Ticket"}
+          </button>
+        </div>
+      )}
 
       {/* View Full Ticket Button */}
       <div className="mt-4 flex justify-end">
@@ -178,8 +196,6 @@ const TicketItem = ({ ticket, currentUser, onStatusChange, onAssignClick }) => {
 };
 
 export default TicketItem;
-
-
 
 // import { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';

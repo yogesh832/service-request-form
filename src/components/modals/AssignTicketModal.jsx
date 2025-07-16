@@ -10,28 +10,40 @@ const AssignTicketModal = ({ ticket, employees, onClose, onAssign }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedEmployee) return;
-    
-    try {
-      setIsSubmitting(true);
-      await api.patch(`/tickets/${ticket._id}/assign`, {
-        assignedTo: selectedEmployee,
-      });
-      onAssign(ticket._id, selectedEmployee);
-      toast.success('Ticket assigned successfully');
-      setSelectedEmployee('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!selectedEmployee) return;
 
+  try {
+    setIsSubmitting(true);
+
+    const res = await api.patch(`/tickets/${ticket._id}/assign`, {
+      assignedTo: selectedEmployee,
+    });
+
+    const { success, message } = res.data;
+
+    // ✅ Handle backend success or failure manually
+    if (success) {
+      onAssign(ticket._id, selectedEmployee);
+      toast.success(message || 'Ticket assigned successfully');
+      setSelectedEmployee('');
       onClose();
-    } catch (error) {
-      setError(error.response?.data?.message || 'Assignment failed');
-      toast(error.response?.data?.message || 'Assignment failed');
-      console.error('Ticket assignment failed:', error);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setError(message || 'Assignment failed');
+      toast.error(message || 'Assignment failed');
     }
-  };
+
+  } catch (error) {
+    const message = error.response?.data?.message || 'Assignment failed';
+    setError(message);
+    toast.error(message); // Only one toast here
+    console.error('Ticket assignment failed:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <Modal onClose={onClose}>

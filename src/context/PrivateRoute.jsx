@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const [user, setUser] = useState(null);
@@ -9,7 +9,12 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('https://service-request-form-backend-kcy2.onrender.com/api/auth/me', { withCredentials: true });
+        const res = await axios.get(
+          "https://service-request-form-backend-kcy2.onrender.com/api/auth/me",
+          {
+            withCredentials: true,
+          }
+        );
         const fetchedUser = res.data.user;
         setUser(fetchedUser);
 
@@ -27,9 +32,12 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     fetchUser();
   }, []);
 
-  if (loading) return       <div className="flex justify-center items-center h-screen">
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>;
+      </div>
+    );
 
   if (!user) return <Navigate to="/login" replace />;
 

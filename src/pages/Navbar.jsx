@@ -4,7 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { FaBars, FaTimes } from "react-icons/fa";
 import logo from "../assets/logo.png";
-import salkaName from "../assets/salkatech_Name.png"
+import salkaName from "../assets/salkatech_Name.png";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,8 +59,6 @@ const Navbar = () => {
         >
           <img src={logo} className="h-10" alt="Logo" />
           <img src={salkaName} className="h-6" alt="Logo" />
-          
-         
         </a>
 
         {/* Desktop Menu */}
